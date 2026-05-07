@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productivity Dashboard</title>
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+    <script type="module" src="./js/main.js"></script>
+  </head>
+  <body>
+    <header class="header wrapper">
+      <div class="header-left">
+        <h1 class="app-title">Productivity Dashboard</h1>
+      </div>
+
+      <div class="header-right">
+        <button id="theme-toggle" aria-label="Toggle Theme"></button>
+      </div>
+    </header>
+    <aside class="sidebar">
+      <nav>
+        <ul class="nav-wrap">
+          <li data-section="dashboard">
+            <a href="#">Dashboard</a>
+          </li>
+          <li data-section="todo">
+            <a href="#">Todo</a>
+          </li>
+          <li data-section="notes">
+            <a href="#">Notes</a>
+          </li>
+          <li data-section="timer">
+            <a href="#">Timer</a>
+          </li>
+          <li data-section="weather">
+            <a href="#">Weather</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main wrapper">
+      <section class="page-section" data-section="dashboard">
+        <h2>Dashboard</h2>
+      </section>
+      <section class="page-section" data-section="todo">
+        <h2>Todo</h2>
+        <section>
+          <form class="todo-form">
+            <input type="text" name="todo-input" required />
+            <button class="add-todo">Add</button>
+          </form>
+          <div class="todo-filters">
+            <button data-filter="all">All</button>
+            <button data-filter="active">Active</button>
+            <button data-filter="done">Done</button>
+          </div>
+          <div class="todo-list"></div>
+          <div class="todo-footer">
+            <div class="remaining-todo-count"></div>
+            <button class="clear-completed">Clear Completed</button>
+          </div>
+        </section>
+      </section>
+      <section class="page-section" data-section="notes">
+        <h2>Notes</h2>
+      </section>
+      <section class="page-section" data-section="timer">
+        <h2>Timer</h2>
+      </section>
+      <section class="page-section" data-section="weather">
+        <h2>Weather</h2>
+      </section>
+    </main>
+  </body>
+</html>

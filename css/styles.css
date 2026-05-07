@@ -1,0 +1,145 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  min-height: 100vh;
+  font-family: var(--font-family);
+  line-height: var(--line-height);
+}
+
+.wrapper {
+  padding: 0 var(--space-lg);
+}
+
+body .header {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+}
+body .sidebar {
+  grid-row: 1 / span 2;
+  background-color: var(--color-selectable-bg);
+  padding: var(--space-sm);
+}
+body .main {
+  grid-column: 2;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.nav-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.nav-wrap li {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+.nav-wrap li:hover:not(.active) {
+  background-color: var(--color-selectable-bg-hover);
+}
+.nav-wrap li.active {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary);
+}
+.nav-wrap a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#theme-toggle {
+  cursor: pointer;
+}
+
+.page-section {
+  display: none;
+}
+.page-section.active {
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  padding: 3px 10px;
+}
+
+button.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-bg);
+}
+
+[data-display=none] {
+  display: none;
+}
+
+.add-todo {
+  cursor: pointer;
+}
+
+.todo-form {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-sm);
+  border-bottom: 2px solid var(--color-border);
+  gap: var(--space-xs);
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.todo .text {
+  flex: 1;
+}
+
+.todo.completed .text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.todo-filters {
+  display: flex;
+  justify-content: center;
+  column-gap: var(--space-xl);
+  padding: var(--space-sm) 0;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.remaining-todo-count {
+  text-align: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.clear-completed {
+  display: block;
+  margin: var(--space-sm) auto;
+  border-bottom: 2px solid var(--color-border);
+  cursor: pointer;
+}
