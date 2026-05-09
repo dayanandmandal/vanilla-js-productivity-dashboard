@@ -13,11 +13,11 @@ const persistNotesState = function (state) {
   localStorage.setItem(STORAGE_KEYS.NOTES_SORT, state.notes.ui.sortDirection);
   if (state.notes.ui.editingId) {
     localStorage.setItem(
-      STORAGE_KEYS.NOTES_SELECTED_ID,
+      STORAGE_KEYS.NOTES_EDITING_ID,
       state.notes.ui.editingId,
     );
   } else {
-    localStorage.removeItem(STORAGE_KEYS.NOTES_SELECTED_ID);
+    localStorage.removeItem(STORAGE_KEYS.NOTES_EDITING_ID);
   }
 };
 

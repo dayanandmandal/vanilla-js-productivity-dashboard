@@ -12,3 +12,17 @@ export const getTimestamps = function (createdAt, updatedAt) {
 
   return `${textStart} ${date} ${month} ${year}`;
 };
+
+export const loadString = function (key, fallback) {
+  return localStorage.getItem(key) || fallback;
+};
+
+export const loadNumber = function (key, fallback) {
+  const rawValue = localStorage.getItem(key);
+  return rawValue ? +rawValue : fallback;
+};
+
+export const loadJSON = function (key, fallback) {
+  const rawValue = localStorage.getItem(key);
+  return rawValue ? JSON.parse(rawValue) : fallback;
+};

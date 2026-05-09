@@ -13,41 +13,29 @@ import {
   sortNotesList,
 } from "./modules/notes.js";
 import { STORAGE_KEYS } from "./helpers/constants.js";
+import { loadJSON, loadNumber, loadString } from "./helpers/utils.js";
 
 const state = {
   app: {
-    activeSection:
-      localStorage.getItem(STORAGE_KEYS.ACTIVE_SECTION) || "dashboard",
-    theme: localStorage.getItem(STORAGE_KEYS.THEME) || "light",
+    activeSection: loadString(STORAGE_KEYS.ACTIVE_SECTION, "dashboard"),
+    theme: loadString(STORAGE_KEYS.THEME, "light"),
   },
 
   todo: {
-    data: localStorage.getItem(STORAGE_KEYS.TODO_LIST)
-      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.TODO_LIST))
-      : [],
+    data: loadJSON(STORAGE_KEYS.TODO_LIST, []),
     ui: {
-      editingId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
-        ? +localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
-        : null,
-      draft: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT)
-        ? JSON.parse(localStorage.getItem(STORAGE_KEYS.TODO_DRAFT))
-        : { text: "" },
-      filterBy: localStorage.getItem(STORAGE_KEYS.TODO_FILTER) || "all",
+      editingId: loadNumber(STORAGE_KEYS.TODO_EDITING_ID, null),
+      draft: loadJSON(STORAGE_KEYS.TODO_DRAFT, { text: "" }),
+      filterBy: loadString(STORAGE_KEYS.TODO_FILTER, "all"),
     },
   },
 
   notes: {
-    data: localStorage.getItem(STORAGE_KEYS.NOTES_LIST)
-      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_LIST))
-      : [],
+    data: loadJSON(STORAGE_KEYS.NOTES_LIST, []),
     ui: {
-      editingId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
-        ? +localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
-        : null,
-      draft: localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT)
-        ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT))
-        : { title: "", desc: "" },
-      sortDirection: localStorage.getItem(STORAGE_KEYS.NOTES_SORT) || "desc",
+      editingId: loadNumber(STORAGE_KEYS.NOTES_EDITING_ID, null),
+      draft: loadJSON(STORAGE_KEYS.NOTES_DRAFT, { title: "", desc: "" }),
+      sortDirection: loadString(STORAGE_KEYS.NOTES_SORT, "desc"),
     },
   },
 };
