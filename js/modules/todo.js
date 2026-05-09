@@ -1,28 +1,12 @@
-const persistTodoList = function (state) {
+const persistTodoState = function (state) {
   localStorage.setItem("todoList", JSON.stringify(state.todo.list));
-};
-
-const persistTodoListFilterBy = function (state) {
   localStorage.setItem("todoListFilterBy", state.todo.filterBy);
-};
-
-const persistEditingTodoId = function (state) {
+  localStorage.setItem("todoDraftText", state.todo.draftText);
   if (state.todo.editingTodoId) {
     localStorage.setItem("editingTodoId", state.todo.editingTodoId);
   } else {
     localStorage.removeItem("editingTodoId");
   }
-};
-
-const persistTodoDraftText = function (state) {
-  localStorage.setItem("todoDraftText", state.todo.draftText);
-};
-
-const persistTodos = function (state) {
-  persistTodoList(state);
-  persistTodoListFilterBy(state);
-  persistEditingTodoId(state);
-  persistTodoDraftText(state);
 };
 
 const getTodoById = function (todoList, id) {
@@ -94,13 +78,13 @@ const setUpAddTodoEvent = function (state, render) {
 
     event.target.reset();
     clearEditingState(state);
-    persistTodos(state);
+    persistTodoState(state);
     render();
   };
 
   const cancelTodo = function (event) {
     clearEditingState(state);
-    persistTodos(state);
+    persistTodoState(state);
     render();
   };
 
@@ -159,14 +143,14 @@ const setUpTodoActionsEvent = function (state, render) {
     switch (button.dataset.action) {
       case "edit": {
         enableEditTodo(event, state);
-        persistTodos(state);
+        persistTodoState(state);
         render();
         break;
       }
 
       case "delete": {
         deleteTodo(event, state);
-        persistTodos(state);
+        persistTodoState(state);
         render();
         break;
       }
@@ -180,7 +164,7 @@ const setUpTodoActionsEvent = function (state, render) {
     switch (input.dataset.action) {
       case "complete": {
         completeTodo(event, state);
-        persistTodos(state);
+        persistTodoState(state);
         render();
         break;
       }
@@ -205,7 +189,7 @@ const setUpTabChangeEvent = function (state, render) {
 
     state.todo.filterBy = filterBy;
 
-    persistTodos(state);
+    persistTodoState(state);
 
     render();
   };
@@ -219,7 +203,7 @@ const setUpClearCompletedEvent = function (state, render) {
   const handleClearCompleted = function () {
     state.todo.list = state.todo.list.filter((t) => !t.isCompleted);
 
-    persistTodos(state);
+    persistTodoState(state);
     render();
   };
 

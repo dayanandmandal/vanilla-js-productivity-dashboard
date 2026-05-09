@@ -1,21 +1,12 @@
-const persistNotes = function (state) {
+const persistNotesState = function (state) {
   localStorage.setItem("notesList", JSON.stringify(state.notes.list));
-};
-
-const persistDraft = function (state) {
   localStorage.setItem("notesDraft", JSON.stringify(state.notes.draft));
-};
-
-const persistSelectedNoteId = function (state) {
+  localStorage.setItem("notesSortDirection", state.notes.sortDirection);
   if (state.notes.selectedNoteId) {
     localStorage.setItem("notesSelectedNoteId", state.notes.selectedNoteId);
   } else {
     localStorage.removeItem("notesSelectedNoteId");
   }
-};
-
-const persistSortDirection = function (state) {
-  localStorage.setItem("notesSortDirection", state.notes.sortDirection);
 };
 
 const getNoteById = function (notesList, id) {
@@ -26,9 +17,6 @@ const clearEditingState = function (state) {
   state.notes.selectedNoteId = null;
   state.notes.draft.title = "";
   state.notes.draft.desc = "";
-
-  persistDraft(state);
-  persistSelectedNoteId(state);
 };
 
 const getTimestamps = function (note) {
@@ -77,13 +65,14 @@ const setUpFormActionEvents = function (state, render) {
 
     event.target.reset();
     clearEditingState(state);
-    persistNotes(state);
+    persistNotesState(state);
 
     render();
   };
 
   const cancelNotes = function (event) {
     clearEditingState(state);
+    persistNotesState(state);
 
     render();
   };
@@ -101,7 +90,7 @@ const setUpFormActionEvents = function (state, render) {
         break;
     }
 
-    persistDraft(state);
+    persistNotesState(state);
   };
 
   const formEle = document.querySelector(".notes-form");
@@ -127,8 +116,7 @@ const setUpNotesActionEvents = function (state, render) {
     state.notes.draft.title = note.title;
     state.notes.draft.desc = note.desc;
 
-    persistDraft(state);
-    persistSelectedNoteId(state);
+    persistNotesState(state);
   };
 
   const deleteNotes = function (event) {
@@ -140,6 +128,7 @@ const setUpNotesActionEvents = function (state, render) {
 
     if (state.notes.selectedNoteId === noteId) {
       clearEditingState(state);
+      persistNotesState(state);
     }
   };
 
@@ -150,13 +139,13 @@ const setUpNotesActionEvents = function (state, render) {
     switch (button.dataset.action) {
       case "edit":
         editNotes(event);
-        persistNotes(state);
+        persistNotesState(state);
         render();
         break;
 
       case "delete":
         deleteNotes(event);
-        persistNotes(state);
+        persistNotesState(state);
         render();
         break;
     }
@@ -170,7 +159,7 @@ const setUpSortEvent = function (state, render) {
     state.notes.sortDirection =
       state.notes.sortDirection === "desc" ? "asc" : "desc";
 
-    persistSortDirection(state);
+    persistNotesState(state);
     render();
   };
 
