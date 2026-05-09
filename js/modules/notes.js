@@ -11,10 +11,10 @@ const persistNotesState = function (state) {
     JSON.stringify(state.notes.ui.draft),
   );
   localStorage.setItem(STORAGE_KEYS.NOTES_SORT, state.notes.ui.sortDirection);
-  if (state.notes.ui.selectedId) {
+  if (state.notes.ui.editingId) {
     localStorage.setItem(
       STORAGE_KEYS.NOTES_SELECTED_ID,
-      state.notes.ui.selectedId,
+      state.notes.ui.editingId,
     );
   } else {
     localStorage.removeItem(STORAGE_KEYS.NOTES_SELECTED_ID);
@@ -26,7 +26,7 @@ const getNoteById = function (notesList, id) {
 };
 
 const clearEditingState = function (state) {
-  state.notes.ui.selectedId = null;
+  state.notes.ui.editingId = null;
   state.notes.ui.draft.title = "";
   state.notes.ui.draft.desc = "";
 };
@@ -41,8 +41,8 @@ const setUpFormActionEvents = function (state, render) {
     if (!title) return;
 
     // editing
-    if (state.notes.ui.selectedId) {
-      const note = getNoteById(state.notes.data, state.notes.ui.selectedId);
+    if (state.notes.ui.editingId) {
+      const note = getNoteById(state.notes.data, state.notes.ui.editingId);
       if (!note) return;
 
       note.title = title;
@@ -109,7 +109,7 @@ const setUpNotesActionEvents = function (state, render) {
     const noteId = +noteEle.dataset.id;
 
     const note = getNoteById(state.notes.data, noteId);
-    state.notes.ui.selectedId = noteId;
+    state.notes.ui.editingId = noteId;
     state.notes.ui.draft.title = note.title;
     state.notes.ui.draft.desc = note.desc;
 
@@ -123,7 +123,7 @@ const setUpNotesActionEvents = function (state, render) {
     const noteId = +noteEle.dataset.id;
     state.notes.data = state.notes.data.filter((n) => n.id !== noteId);
 
-    if (state.notes.ui.selectedId === noteId) {
+    if (state.notes.ui.editingId === noteId) {
       clearEditingState(state);
       persistNotesState(state);
     }
@@ -260,7 +260,7 @@ export const renderNotesFormFromDraft = function (state) {
   const saveBtn = formEle.querySelector(".save-note");
   if (!saveBtn) return;
 
-  saveBtn.innerHTML = state.notes.ui.selectedId ? "Update" : "Save";
+  saveBtn.innerHTML = state.notes.ui.editingId ? "Update" : "Save";
 };
 
 export const sortNotesList = function (notesList, sortDirection) {

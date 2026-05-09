@@ -15,19 +15,23 @@ import {
 import { STORAGE_KEYS } from "./helpers/constants.js";
 
 const state = {
-  activeSection:
-    localStorage.getItem(STORAGE_KEYS.ACTIVE_SECTION) || "dashboard",
-  theme: localStorage.getItem(STORAGE_KEYS.THEME) || "light",
+  app: {
+    activeSection:
+      localStorage.getItem(STORAGE_KEYS.ACTIVE_SECTION) || "dashboard",
+    theme: localStorage.getItem(STORAGE_KEYS.THEME) || "light",
+  },
 
   todo: {
     data: localStorage.getItem(STORAGE_KEYS.TODO_LIST)
       ? JSON.parse(localStorage.getItem(STORAGE_KEYS.TODO_LIST))
       : [],
     ui: {
-      selectedId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
+      editingId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
         ? +localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
         : null,
-      draft: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT) || "",
+      draft: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT)
+        ? JSON.parse(localStorage.getItem(STORAGE_KEYS.TODO_DRAFT))
+        : { text: "" },
       filterBy: localStorage.getItem(STORAGE_KEYS.TODO_FILTER) || "all",
     },
   },
@@ -37,7 +41,7 @@ const state = {
       ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_LIST))
       : [],
     ui: {
-      selectedId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
+      editingId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
         ? +localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
         : null,
       draft: localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT)
@@ -49,17 +53,17 @@ const state = {
 };
 
 const persistAppData = function () {
-  localStorage.setItem(STORAGE_KEYS.ACTIVE_SECTION, state.activeSection);
-  localStorage.setItem(STORAGE_KEYS.THEME, state.theme);
+  localStorage.setItem(STORAGE_KEYS.ACTIVE_SECTION, state.app.activeSection);
+  localStorage.setItem(STORAGE_KEYS.THEME, state.app.theme);
 };
 
 const themeToggleBtn = document.querySelector("#theme-toggle");
 
 const renderTheme = function () {
-  document.body.classList.toggle("dark", state.theme === "dark");
+  document.body.classList.toggle("dark", state.app.theme === "dark");
 
   if (themeToggleBtn) {
-    themeToggleBtn.textContent = state.theme === "dark" ? "☀️" : "🌙";
+    themeToggleBtn.textContent = state.app.theme === "dark" ? "☀️" : "🌙";
   }
 };
 
@@ -68,7 +72,7 @@ const renderSidebar = function () {
   if (!items.length) return;
 
   items.forEach((item) => {
-    const isActive = item.dataset.section === state.activeSection;
+    const isActive = item.dataset.section === state.app.activeSection;
     item.classList.toggle("active", isActive);
   });
 };
@@ -78,7 +82,7 @@ const renderContent = function () {
   if (!sections.length) return;
 
   sections.forEach((section) => {
-    const isActive = state.activeSection === section.dataset.section;
+    const isActive = state.app.activeSection === section.dataset.section;
     section.classList.toggle("active", isActive);
   });
 };
@@ -91,7 +95,7 @@ const renderApp = function () {
 
 const renderTodoScreen = function () {
   renderTodoFiltersTab(state);
-  renderTodoList(filterTodoList(state), state.todo.ui.selectedId);
+  renderTodoList(filterTodoList(state), state.todo.ui.editingId);
   renderTodoFormFromDraft(state);
   renderRemainingTodoCount(state);
 };
@@ -99,7 +103,7 @@ const renderTodoScreen = function () {
 const renderNotesScreen = function () {
   renderNotesList(
     sortNotesList(state.notes.data, state.notes.ui.sortDirection),
-    state.notes.ui.selectedId,
+    state.notes.ui.editingId,
   );
   renderNotesFormFromDraft(state);
 };
@@ -107,7 +111,7 @@ const renderNotesScreen = function () {
 const render = function () {
   renderApp();
 
-  switch (state.activeSection) {
+  switch (state.app.activeSection) {
     case "todo":
       renderTodoScreen();
       break;
@@ -124,9 +128,9 @@ const render = function () {
     if (!clickedItem) return;
 
     const section = clickedItem.dataset.section;
-    if (!section || section === state.activeSection) return;
+    if (!section || section === state.app.activeSection) return;
 
-    state.activeSection = section;
+    state.app.activeSection = section;
 
     persistAppData();
 
@@ -140,7 +144,7 @@ const render = function () {
 
 (function () {
   const handleThemeToggle = function () {
-    state.theme = state.theme === "dark" ? "light" : "dark";
+    state.app.theme = state.app.theme === "dark" ? "light" : "dark";
 
     persistAppData();
 

@@ -2,14 +2,14 @@ import { getTimestamps } from "../helpers/utils.js";
 import { STORAGE_KEYS } from "../helpers/constants.js";
 
 const persistTodoState = function (state) {
-  localStorage.setItem("todoList", JSON.stringify(state.todo.data));
+  localStorage.setItem(STORAGE_KEYS.TODO_LIST, JSON.stringify(state.todo.data));
   localStorage.setItem(STORAGE_KEYS.TODO_FILTER, state.todo.ui.filterBy);
-  localStorage.setItem(STORAGE_KEYS.TODO_DRAFT, state.todo.ui.draft);
-  if (state.todo.ui.selectedId) {
-    localStorage.setItem(
-      STORAGE_KEYS.TODO_EDITING_ID,
-      state.todo.ui.selectedId,
-    );
+  localStorage.setItem(
+    STORAGE_KEYS.TODO_DRAFT,
+    JSON.stringify(state.todo.ui.draft),
+  );
+  if (state.todo.ui.editingId) {
+    localStorage.setItem(STORAGE_KEYS.TODO_EDITING_ID, state.todo.ui.editingId);
   } else {
     localStorage.removeItem(STORAGE_KEYS.TODO_EDITING_ID);
   }
@@ -27,8 +27,8 @@ const getTodoById = function (todoList, id) {
 };
 
 const clearEditingState = function (state) {
-  state.todo.ui.selectedId = null;
-  state.todo.ui.draft = "";
+  state.todo.ui.editingId = null;
+  state.todo.ui.draft.text = "";
 };
 
 const getTodoCheckbox = function (todo) {
@@ -71,7 +71,7 @@ const setUpAddTodoEvent = function (state, render) {
 
     switch (input.name) {
       case "todo-input":
-        state.todo.ui.draft = input.value;
+        state.todo.ui.draft.text = input.value;
         persistTodoState(state);
         break;
     }
@@ -80,16 +80,16 @@ const setUpAddTodoEvent = function (state, render) {
   const addTodo = function (event) {
     event.preventDefault();
 
-    if (state.todo.ui.selectedId) {
-      const todo = getTodoById(state.todo.data, state.todo.ui.selectedId);
+    if (state.todo.ui.editingId) {
+      const todo = getTodoById(state.todo.data, state.todo.ui.editingId);
       if (!todo) return;
 
-      todo.text = state.todo.ui.draft.trim();
+      todo.text = state.todo.ui.draft.text.trim();
       todo.updatedAt = Date.now();
     } else {
       const todo = {
         id: Date.now(),
-        text: state.todo.ui.draft.trim(),
+        text: state.todo.ui.draft.text.trim(),
         isCompleted: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -124,14 +124,14 @@ const setUpTodoActionsEvent = function (state, render) {
     const todo = getTodoById(state.todo.data, todoId);
     if (!todoId) return;
 
-    state.todo.ui.selectedId = todoId;
-    state.todo.ui.draft = todo.text;
+    state.todo.ui.editingId = todoId;
+    state.todo.ui.draft.text = todo.text;
   };
 
   const deleteTodo = function (state, todoId) {
     state.todo.data = state.todo.data.filter((t) => t.id !== todoId);
 
-    if (state.todo.ui.selectedId === todoId) {
+    if (state.todo.ui.editingId === todoId) {
       clearEditingState(state);
     }
   };
@@ -212,6 +212,11 @@ const setUpTabChangeEvent = function (state, render) {
 const setUpClearCompletedEvent = function (state, render) {
   const handleClearCompleted = function () {
     state.todo.data = state.todo.data.filter((t) => !t.isCompleted);
+
+    const todo = getTodoById(state.todo.data, state.todo.ui.editingId);
+    if (!todo) {
+      clearEditingState(state);
+    }
 
     persistTodoState(state);
     render();
@@ -312,7 +317,7 @@ export const renderTodoFormFromDraft = function (state) {
   const submitBtn = todoForm.querySelector(".add-todo");
   if (!submitBtn) return;
 
-  todoForm.elements["todo-input"].value = state.todo.ui.draft;
-  todoForm.dataset.mode = state.todo.ui.selectedId ? "edit" : "create";
-  submitBtn.textContent = state.todo.ui.selectedId ? "Update" : "Add";
+  todoForm.elements["todo-input"].value = state.todo.ui.draft.text;
+  todoForm.dataset.mode = state.todo.ui.editingId ? "edit" : "create";
+  submitBtn.textContent = state.todo.ui.editingId ? "Update" : "Add";
 };

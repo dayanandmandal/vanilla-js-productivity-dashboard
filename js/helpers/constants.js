@@ -10,5 +10,5 @@ export const STORAGE_KEYS = {
   NOTES_LIST: "notesList",
   NOTES_DRAFT: "notesDraft",
   NOTES_SORT: "notesSortDirection",
-  NOTES_SELECTED_ID: "notesSelectedNoteId",
+  NOTES_SELECTED_ID: "notesEditingId",
 };
