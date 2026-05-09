@@ -5,7 +5,10 @@ const persistTodoState = function (state) {
   localStorage.setItem(STORAGE_KEYS.TODO_FILTER, state.todo.filterBy);
   localStorage.setItem(STORAGE_KEYS.TODO_DRAFT, state.todo.draftText);
   if (state.todo.editingTodoId) {
-    localStorage.setItem(STORAGE_KEYS.TODO_EDITING_ID, state.todo.editingTodoId);
+    localStorage.setItem(
+      STORAGE_KEYS.TODO_EDITING_ID,
+      state.todo.editingTodoId,
+    );
   } else {
     localStorage.removeItem(STORAGE_KEYS.TODO_EDITING_ID);
   }
@@ -68,6 +71,7 @@ const setUpAddTodoEvent = function (state, render) {
     switch (input.name) {
       case "todo-input":
         state.todo.draftText = input.value;
+        persistTodoState(state);
         break;
     }
   };
