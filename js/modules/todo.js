@@ -1,3 +1,5 @@
+import { getTimestamps } from "../helpers/utils.js";
+
 const persistTodoState = function (state) {
   localStorage.setItem("todoList", JSON.stringify(state.todo.list));
   localStorage.setItem("todoListFilterBy", state.todo.filterBy);
@@ -52,6 +54,12 @@ const getTodoDeleteBtn = function () {
   deleteBtn.dataset.action = "delete";
   return deleteBtn;
 };
+const getTodotimestampsP = function (todo) {
+  const timestampsP = document.createElement("p");
+  timestampsP.textContent = getTimestamps(todo.createdAt, todo.updatedAt);
+  timestampsP.classList.add("todo-time");
+  return timestampsP;
+};
 
 const setUpAddTodoEvent = function (state, render) {
   const handleDraftChange = function (event) {
@@ -72,12 +80,14 @@ const setUpAddTodoEvent = function (state, render) {
       if (!todo) return;
 
       todo.text = state.todo.draftText.trim();
+      todo.updatedAt = Date.now();
     } else {
       const todo = {
         id: Date.now(),
         text: state.todo.draftText.trim(),
         isCompleted: false,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
 
       state.todo.list.push(todo);
@@ -255,6 +265,9 @@ export const renderTodoList = (todoList, editingTodoId) => {
 
     const deleteBtn = getTodoDeleteBtn();
     todoDiv.appendChild(deleteBtn);
+
+    const timestampsP = getTodotimestampsP(todo);
+    todoDiv.appendChild(timestampsP);
 
     if (todo.isCompleted) todoDiv.classList.add("completed");
     todoListEle.appendChild(todoDiv);

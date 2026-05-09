@@ -108,8 +108,9 @@ button.active {
 
 .todo {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-md);
+  gap: 0 var(--space-md);
   padding: var(--space-sm);
   border-bottom: 2px solid var(--color-border);
 }
@@ -270,7 +271,12 @@ button:hover {
   -webkit-line-clamp: 4;
 }
 
-.card .notes-time {
+.card .notes-time,
+.todo .todo-time {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+}
+
+.todo .todo-time {
+  flex-basis: 100%;
 }

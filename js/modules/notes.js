@@ -1,3 +1,5 @@
+import { getTimestamps } from "../helpers/utils.js";
+
 const persistNotesState = function (state) {
   localStorage.setItem("notesList", JSON.stringify(state.notes.list));
   localStorage.setItem("notesDraft", JSON.stringify(state.notes.draft));
@@ -17,21 +19,6 @@ const clearEditingState = function (state) {
   state.notes.selectedNoteId = null;
   state.notes.draft.title = "";
   state.notes.draft.desc = "";
-};
-
-const getTimestamps = function (note) {
-  const currentTimestamp = new Date();
-  const timestamps = new Date(note.updatedAt);
-
-  const textStart = note.createdAt === note.updatedAt ? "Updated" : "Created";
-  const date = timestamps.getDate();
-  const month = timestamps.toLocaleString("en-IN", { month: "short" });
-  const year =
-    timestamps.getFullYear() !== currentTimestamp.getFullYear()
-      ? createdTimestamp.getFullYear()
-      : "";
-
-  return `${textStart} ${date} ${month} ${year}`;
 };
 
 const setUpFormActionEvents = function (state, render) {
@@ -185,7 +172,7 @@ const getCardDiv = function (note) {
   descP.classList.add("desc");
 
   const timestampsP = document.createElement("p");
-  timestampsP.textContent = getTimestamps(note);
+  timestampsP.textContent = getTimestamps(note.createdAt, note.updatedAt);
   timestampsP.classList.add("notes-time");
 
   const editButton = document.createElement("button");
