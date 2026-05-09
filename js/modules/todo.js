@@ -2,13 +2,13 @@ import { getTimestamps } from "../helpers/utils.js";
 import { STORAGE_KEYS } from "../helpers/constants.js";
 
 const persistTodoState = function (state) {
-  localStorage.setItem("todoList", JSON.stringify(state.todo.list));
-  localStorage.setItem(STORAGE_KEYS.TODO_FILTER, state.todo.filterBy);
-  localStorage.setItem(STORAGE_KEYS.TODO_DRAFT, state.todo.draftText);
-  if (state.todo.editingTodoId) {
+  localStorage.setItem("todoList", JSON.stringify(state.todo.data));
+  localStorage.setItem(STORAGE_KEYS.TODO_FILTER, state.todo.ui.filterBy);
+  localStorage.setItem(STORAGE_KEYS.TODO_DRAFT, state.todo.ui.draft);
+  if (state.todo.ui.selectedId) {
     localStorage.setItem(
       STORAGE_KEYS.TODO_EDITING_ID,
-      state.todo.editingTodoId,
+      state.todo.ui.selectedId,
     );
   } else {
     localStorage.removeItem(STORAGE_KEYS.TODO_EDITING_ID);
@@ -27,8 +27,8 @@ const getTodoById = function (todoList, id) {
 };
 
 const clearEditingState = function (state) {
-  state.todo.editingTodoId = null;
-  state.todo.draftText = "";
+  state.todo.ui.selectedId = null;
+  state.todo.ui.draft = "";
 };
 
 const getTodoCheckbox = function (todo) {
@@ -71,7 +71,7 @@ const setUpAddTodoEvent = function (state, render) {
 
     switch (input.name) {
       case "todo-input":
-        state.todo.draftText = input.value;
+        state.todo.ui.draft = input.value;
         persistTodoState(state);
         break;
     }
@@ -80,22 +80,22 @@ const setUpAddTodoEvent = function (state, render) {
   const addTodo = function (event) {
     event.preventDefault();
 
-    if (state.todo.editingTodoId) {
-      const todo = getTodoById(state.todo.list, state.todo.editingTodoId);
+    if (state.todo.ui.selectedId) {
+      const todo = getTodoById(state.todo.data, state.todo.ui.selectedId);
       if (!todo) return;
 
-      todo.text = state.todo.draftText.trim();
+      todo.text = state.todo.ui.draft.trim();
       todo.updatedAt = Date.now();
     } else {
       const todo = {
         id: Date.now(),
-        text: state.todo.draftText.trim(),
+        text: state.todo.ui.draft.trim(),
         isCompleted: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
 
-      state.todo.list.push(todo);
+      state.todo.data.push(todo);
     }
 
     event.target.reset();
@@ -121,23 +121,23 @@ const setUpAddTodoEvent = function (state, render) {
 
 const setUpTodoActionsEvent = function (state, render) {
   const enableEditTodo = function (state, todoId) {
-    const todo = getTodoById(state.todo.list, todoId);
+    const todo = getTodoById(state.todo.data, todoId);
     if (!todoId) return;
 
-    state.todo.editingTodoId = todoId;
-    state.todo.draftText = todo.text;
+    state.todo.ui.selectedId = todoId;
+    state.todo.ui.draft = todo.text;
   };
 
   const deleteTodo = function (state, todoId) {
-    state.todo.list = state.todo.list.filter((t) => t.id !== todoId);
+    state.todo.data = state.todo.data.filter((t) => t.id !== todoId);
 
-    if (state.todo.editingTodoId === todoId) {
+    if (state.todo.ui.selectedId === todoId) {
       clearEditingState(state);
     }
   };
 
   const completeTodo = function (state, todoId) {
-    const todo = getTodoById(state.todo.list, todoId);
+    const todo = getTodoById(state.todo.data, todoId);
     if (!todo) return;
 
     todo.isCompleted = !todo.isCompleted;
@@ -197,7 +197,7 @@ const setUpTabChangeEvent = function (state, render) {
     const filterBy = todoFilterEle.dataset.filter;
     if (!filterBy) return;
 
-    state.todo.filterBy = filterBy;
+    state.todo.ui.filterBy = filterBy;
 
     persistTodoState(state);
 
@@ -211,7 +211,7 @@ const setUpTabChangeEvent = function (state, render) {
 
 const setUpClearCompletedEvent = function (state, render) {
   const handleClearCompleted = function () {
-    state.todo.list = state.todo.list.filter((t) => !t.isCompleted);
+    state.todo.data = state.todo.data.filter((t) => !t.isCompleted);
 
     persistTodoState(state);
     render();
@@ -231,16 +231,16 @@ export const setupTodoEvents = (state, render) => {
 };
 
 export const filterTodoList = function (state) {
-  switch (state.todo.filterBy) {
+  switch (state.todo.ui.filterBy) {
     case "active": {
-      return state.todo.list.filter((t) => !t.isCompleted);
+      return state.todo.data.filter((t) => !t.isCompleted);
     }
     case "done": {
-      return state.todo.list.filter((t) => t.isCompleted);
+      return state.todo.data.filter((t) => t.isCompleted);
     }
 
     default:
-      return [...state.todo.list];
+      return [...state.todo.data];
   }
 };
 
@@ -283,7 +283,7 @@ export const renderRemainingTodoCount = function (state) {
   const remainingTodoDiv = document.querySelector(".remaining-todo-count");
   if (!remainingTodoDiv) return;
 
-  const remainingTaskCount = state.todo.list.reduce((count, t) => {
+  const remainingTaskCount = state.todo.data.reduce((count, t) => {
     return t.isCompleted ? count : count + 1;
   }, 0);
 
@@ -300,7 +300,7 @@ export const renderTodoFiltersTab = function (state) {
   if (!items.length) return;
 
   for (let item of items) {
-    const isActive = item.dataset.filter === state.todo.filterBy;
+    const isActive = item.dataset.filter === state.todo.ui.filterBy;
     item.classList.toggle("active", isActive);
   }
 };
@@ -312,7 +312,7 @@ export const renderTodoFormFromDraft = function (state) {
   const submitBtn = todoForm.querySelector(".add-todo");
   if (!submitBtn) return;
 
-  todoForm.elements["todo-input"].value = state.todo.draftText;
-  todoForm.dataset.mode = state.todo.editingTodoId ? "edit" : "create";
-  submitBtn.textContent = state.todo.editingTodoId ? "Update" : "Add";
+  todoForm.elements["todo-input"].value = state.todo.ui.draft;
+  todoForm.dataset.mode = state.todo.ui.selectedId ? "edit" : "create";
+  submitBtn.textContent = state.todo.ui.selectedId ? "Update" : "Add";
 };

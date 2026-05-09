@@ -4,17 +4,17 @@ import { STORAGE_KEYS } from "../helpers/constants.js";
 const persistNotesState = function (state) {
   localStorage.setItem(
     STORAGE_KEYS.NOTES_LIST,
-    JSON.stringify(state.notes.list),
+    JSON.stringify(state.notes.data),
   );
   localStorage.setItem(
     STORAGE_KEYS.NOTES_DRAFT,
-    JSON.stringify(state.notes.draft),
+    JSON.stringify(state.notes.ui.draft),
   );
-  localStorage.setItem(STORAGE_KEYS.NOTES_SORT, state.notes.sortDirection);
-  if (state.notes.selectedNoteId) {
+  localStorage.setItem(STORAGE_KEYS.NOTES_SORT, state.notes.ui.sortDirection);
+  if (state.notes.ui.selectedId) {
     localStorage.setItem(
       STORAGE_KEYS.NOTES_SELECTED_ID,
-      state.notes.selectedNoteId,
+      state.notes.ui.selectedId,
     );
   } else {
     localStorage.removeItem(STORAGE_KEYS.NOTES_SELECTED_ID);
@@ -26,23 +26,23 @@ const getNoteById = function (notesList, id) {
 };
 
 const clearEditingState = function (state) {
-  state.notes.selectedNoteId = null;
-  state.notes.draft.title = "";
-  state.notes.draft.desc = "";
+  state.notes.ui.selectedId = null;
+  state.notes.ui.draft.title = "";
+  state.notes.ui.draft.desc = "";
 };
 
 const setUpFormActionEvents = function (state, render) {
   const saveNotes = function (event) {
     event.preventDefault();
 
-    const title = state.notes.draft.title;
-    const desc = state.notes.draft.desc;
+    const title = state.notes.ui.draft.title;
+    const desc = state.notes.ui.draft.desc;
 
     if (!title) return;
 
     // editing
-    if (state.notes.selectedNoteId) {
-      const note = getNoteById(state.notes.list, state.notes.selectedNoteId);
+    if (state.notes.ui.selectedId) {
+      const note = getNoteById(state.notes.data, state.notes.ui.selectedId);
       if (!note) return;
 
       note.title = title;
@@ -57,7 +57,7 @@ const setUpFormActionEvents = function (state, render) {
         createdAt: Date.now(),
       };
 
-      state.notes.list.push(note);
+      state.notes.data.push(note);
     }
 
     event.target.reset();
@@ -79,11 +79,11 @@ const setUpFormActionEvents = function (state, render) {
 
     switch (input.name) {
       case "notes-title":
-        state.notes.draft.title = input.value;
+        state.notes.ui.draft.title = input.value;
         break;
 
       case "notes-desc":
-        state.notes.draft.desc = input.value;
+        state.notes.ui.draft.desc = input.value;
         break;
     }
 
@@ -108,10 +108,10 @@ const setUpNotesActionEvents = function (state, render) {
 
     const noteId = +noteEle.dataset.id;
 
-    const note = getNoteById(state.notes.list, noteId);
-    state.notes.selectedNoteId = noteId;
-    state.notes.draft.title = note.title;
-    state.notes.draft.desc = note.desc;
+    const note = getNoteById(state.notes.data, noteId);
+    state.notes.ui.selectedId = noteId;
+    state.notes.ui.draft.title = note.title;
+    state.notes.ui.draft.desc = note.desc;
 
     persistNotesState(state);
   };
@@ -121,9 +121,9 @@ const setUpNotesActionEvents = function (state, render) {
     if (!noteEle) return;
 
     const noteId = +noteEle.dataset.id;
-    state.notes.list = state.notes.list.filter((n) => n.id !== noteId);
+    state.notes.data = state.notes.data.filter((n) => n.id !== noteId);
 
-    if (state.notes.selectedNoteId === noteId) {
+    if (state.notes.ui.selectedId === noteId) {
       clearEditingState(state);
       persistNotesState(state);
     }
@@ -153,8 +153,8 @@ const setUpNotesActionEvents = function (state, render) {
 
 const setUpSortEvent = function (state, render) {
   const sortEvent = function () {
-    state.notes.sortDirection =
-      state.notes.sortDirection === "desc" ? "asc" : "desc";
+    state.notes.ui.sortDirection =
+      state.notes.ui.sortDirection === "desc" ? "asc" : "desc";
 
     persistNotesState(state);
     render();
@@ -254,13 +254,13 @@ export const renderNotesFormFromDraft = function (state) {
   const formEle = document.querySelector(".notes-form");
   if (!formEle) return;
 
-  formEle.elements["notes-title"].value = state.notes.draft.title;
-  formEle.elements["notes-desc"].value = state.notes.draft.desc;
+  formEle.elements["notes-title"].value = state.notes.ui.draft.title;
+  formEle.elements["notes-desc"].value = state.notes.ui.draft.desc;
 
   const saveBtn = formEle.querySelector(".save-note");
   if (!saveBtn) return;
 
-  saveBtn.innerHTML = state.notes.selectedNoteId ? "Update" : "Save";
+  saveBtn.innerHTML = state.notes.ui.selectedId ? "Update" : "Save";
 };
 
 export const sortNotesList = function (notesList, sortDirection) {

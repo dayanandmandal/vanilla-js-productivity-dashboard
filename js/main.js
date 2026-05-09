@@ -16,29 +16,34 @@ import { STORAGE_KEYS } from "./helpers/constants.js";
 
 const state = {
   activeSection: "todo",
-  theme: localStorage.getItem(STORAGE_KEYS.THEME) || "dark",
+  theme: "dark",
+
   todo: {
-    list: localStorage.getItem("todoList")
+    data: localStorage.getItem("todoList")
       ? JSON.parse(localStorage.getItem("todoList"))
       : [],
-    editingTodoId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
-      ? +localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
-      : null,
-    draftText: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT) || "",
-    filterBy: localStorage.getItem(STORAGE_KEYS.TODO_FILTER) || "all",
+    ui: {
+      selectedId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
+        ? +localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
+        : null,
+      draft: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT) || "",
+      filterBy: localStorage.getItem(STORAGE_KEYS.TODO_FILTER) || "all",
+    },
   },
 
   notes: {
-    list: localStorage.getItem(STORAGE_KEYS.NOTES_LIST)
+    data: localStorage.getItem(STORAGE_KEYS.NOTES_LIST)
       ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_LIST))
       : [],
-    selectedNoteId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
-      ? +localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
-      : null,
-    draft: localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT)
-      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT))
-      : { title: "", desc: "" },
-    sortDirection: localStorage.getItem(STORAGE_KEYS.NOTES_SORT) || "desc",
+    ui: {
+      selectedId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
+        ? +localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
+        : null,
+      draft: localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT)
+        ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT))
+        : { title: "", desc: "" },
+      sortDirection: localStorage.getItem(STORAGE_KEYS.NOTES_SORT) || "desc",
+    },
   },
 };
 
@@ -80,15 +85,15 @@ const renderApp = function () {
 
 const renderTodoScreen = function () {
   renderTodoFiltersTab(state);
-  renderTodoList(filterTodoList(state), state.todo.editingTodoId);
+  renderTodoList(filterTodoList(state), state.todo.ui.selectedId);
   renderTodoFormFromDraft(state);
   renderRemainingTodoCount(state);
 };
 
 const renderNotesScreen = function () {
   renderNotesList(
-    sortNotesList(state.notes.list, state.notes.sortDirection),
-    state.notes.selectedNoteId,
+    sortNotesList(state.notes.data, state.notes.ui.sortDirection),
+    state.notes.ui.selectedId,
   );
   renderNotesFormFromDraft(state);
 };
