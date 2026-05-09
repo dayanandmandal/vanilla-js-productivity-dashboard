@@ -67,4 +67,6 @@ textContent vs innerText vs innerHTML
   4. innerHTML: If you use this with user-generated content (like a comment box), a hacker can inject a `<script>` tag and steal data.
 - "Rule of Thumb: Default to textContent for 99% of your text updates. Use innerHTML only when you are building elements, and use innerText only if you specifically need to avoid hidden text.
 
+Separate STATE LOGIC from DOM LOGIC
 
+- A fucntion should only works with STATE or DOM not both. You can have `orchestrator/event handler` function which can call the DOM logic and STATE logic function. This helps in reusable logic, easier future React migration, cleaner mental model, etc.

@@ -9,6 +9,13 @@ const persistTodoState = function (state) {
   }
 };
 
+const getTodoIdFromEvent = function (event) {
+  const todoDiv = event.target.closest(".todo");
+  if (!todoDiv) return {};
+
+  return +todoDiv.dataset.id;
+};
+
 const getTodoById = function (todoList, id) {
   return todoList.find((t) => t.id === +id);
 };
@@ -98,27 +105,15 @@ const setUpAddTodoEvent = function (state, render) {
 };
 
 const setUpTodoActionsEvent = function (state, render) {
-  const getTodoIdFromEvent = function (event) {
-    const todoDiv = event.target.closest(".todo");
-    if (!todoDiv) return {};
-
-    return +todoDiv.dataset.id;
-  };
-
-  const enableEditTodo = function (event, state) {
-    const todoId = getTodoIdFromEvent(event);
-    if (!todoId) return;
-
+  const enableEditTodo = function (state, todoId) {
     const todo = getTodoById(state.todo.list, todoId);
+    if (!todoId) return;
 
     state.todo.editingTodoId = todoId;
     state.todo.draftText = todo.text;
   };
 
-  const deleteTodo = function (event, state) {
-    const todoId = getTodoIdFromEvent(event);
-    if (!todoId) return;
-
+  const deleteTodo = function (state, todoId) {
     state.todo.list = state.todo.list.filter((t) => t.id !== todoId);
 
     if (state.todo.editingTodoId === todoId) {
@@ -126,10 +121,7 @@ const setUpTodoActionsEvent = function (state, render) {
     }
   };
 
-  const completeTodo = function (event, state) {
-    const todoId = getTodoIdFromEvent(event);
-    if (!todoId) return;
-
+  const completeTodo = function (state, todoId) {
     const todo = getTodoById(state.todo.list, todoId);
     if (!todo) return;
 
@@ -142,14 +134,16 @@ const setUpTodoActionsEvent = function (state, render) {
 
     switch (button.dataset.action) {
       case "edit": {
-        enableEditTodo(event, state);
+        const todoId = getTodoIdFromEvent(event);
+        enableEditTodo(state, todoId);
         persistTodoState(state);
         render();
         break;
       }
 
       case "delete": {
-        deleteTodo(event, state);
+        const todoId = getTodoIdFromEvent(event);
+        deleteTodo(state, todoId);
         persistTodoState(state);
         render();
         break;
@@ -163,7 +157,8 @@ const setUpTodoActionsEvent = function (state, render) {
 
     switch (input.dataset.action) {
       case "complete": {
-        completeTodo(event, state);
+        const todoId = getTodoIdFromEvent(event);
+        completeTodo(state, todoId);
         persistTodoState(state);
         render();
         break;
