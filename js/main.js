@@ -79,18 +79,16 @@ const renderApp = function () {
 
 const renderTodoScreen = function () {
   renderTodoFiltersTab(state);
-  const filteredTodoList = filterTodoList(state);
-  renderTodoList(filteredTodoList, state.todo.editingTodoId);
+  renderTodoList(filterTodoList(state), state.todo.editingTodoId);
   renderTodoFormFromDraft(state);
   renderRemainingTodoCount(state);
 };
 
 const renderNotesScreen = function () {
-  const sortedNotes = sortNotesList(
-    state.notes.list,
-    state.notes.sortDirection,
+  renderNotesList(
+    sortNotesList(state.notes.list, state.notes.sortDirection),
+    state.notes.selectedNoteId,
   );
-  renderNotesList(sortedNotes, state.notes.selectedNoteId);
   renderNotesFormFromDraft(state);
 };
 
