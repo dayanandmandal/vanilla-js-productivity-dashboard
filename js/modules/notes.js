@@ -31,6 +31,21 @@ const clearEditingState = function (state) {
   persistSelectedNoteId(state);
 };
 
+const getTimestamps = function (note) {
+  const currentTimestamp = new Date();
+  const timestamps = new Date(note.updatedAt);
+
+  const textStart = note.createdAt === note.updatedAt ? "Updated" : "Created";
+  const date = timestamps.getDate();
+  const month = timestamps.toLocaleString("en-IN", { month: "short" });
+  const year =
+    timestamps.getFullYear() !== currentTimestamp.getFullYear()
+      ? createdTimestamp.getFullYear()
+      : "";
+
+  return `${textStart} ${date} ${month} ${year}`;
+};
+
 const setUpFormActionEvents = function (state, render) {
   const saveNotes = function (event) {
     event.preventDefault();
@@ -180,6 +195,10 @@ const getCardDiv = function (note) {
   descP.textContent = note.desc;
   descP.classList.add("desc");
 
+  const timestampsP = document.createElement("p");
+  timestampsP.textContent = getTimestamps(note);
+  timestampsP.classList.add("notes-time");
+
   const editButton = document.createElement("button");
   editButton.textContent = "✏️";
   editButton.classList.add("edit");
@@ -203,6 +222,7 @@ const getCardDiv = function (note) {
 
   cardDiv.appendChild(titleH5);
   cardDiv.appendChild(descP);
+  cardDiv.appendChild(timestampsP);
   cardDiv.appendChild(actionDiv);
 
   return cardDiv;
@@ -250,6 +270,11 @@ export const renderNotesFormFromDraft = function (state) {
 
   formEle.elements["notes-title"].value = state.notes.draft.title;
   formEle.elements["notes-desc"].value = state.notes.draft.desc;
+
+  const saveBtn = formEle.querySelector(".save-note");
+  if (!saveBtn) return;
+
+  saveBtn.innerHTML = state.notes.selectedNoteId ? "Update" : "Save";
 };
 
 export const sortNotesList = function (notesList, sortDirection) {

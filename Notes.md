@@ -56,3 +56,15 @@ Derived state is a UI development approach where data is calculated on-the-fly f
 - large bundle size
 - NOT: `querySelectorAll()` called a few times.
 
+textContent vs innerText vs innerHTML
+
+- innerText (UI-Aware): It only returns text that is visible to the user. If an element is hidden with CSS (display: none), innerText will ignore it. It also respects line breaks and text transformations (like uppercase).
+- textContent (The Full Story): It returns the text content of every element, even if it’s hidden by CSS. It’s a raw dump of all text inside the tags.
+- Imagine this code:`<div id="box"> Hello <span style="display:none">World</span> </div>`
+  1. `box.textContent` → `" Hello World "`
+  2. `box.innerText` → `" Hello "`
+  3. `box.innerHTML` → `" Hello <span style="display:none">World</span> "`
+  4. innerHTML: If you use this with user-generated content (like a comment box), a hacker can inject a `<script>` tag and steal data.
+- "Rule of Thumb: Default to textContent for 99% of your text updates. Use innerHTML only when you are building elements, and use innerText only if you specifically need to avoid hidden text.
+
+

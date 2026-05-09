@@ -198,6 +198,10 @@ button:hover {
   color: var(--color-card);
   border-radius: var(--space-sm);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-sm);
 }
 
 .card .card-action {
@@ -222,7 +226,8 @@ button:hover {
   background-color: var(--color-selectable-bg-hover);
 }
 
-.card.active {
+.card.active,
+.todo.active {
   border-color: var(--color-primary);
   background: var(--color-primary-bg);
 }
@@ -248,9 +253,24 @@ button:hover {
   background-color: var(--color-selectable-bg-hover);
 }
 
-.card .desc {
+.card .desc,
+.card .title {
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
+}
+
+.card .title {
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+}
+.card .desc {
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+}
+
+.card .notes-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
 }

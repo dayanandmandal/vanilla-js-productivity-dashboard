@@ -4,6 +4,7 @@ import {
   filterTodoList,
   renderRemainingTodoCount,
   renderTodoFiltersTab,
+  renderTodoFormFromDraft,
 } from "./modules/todo.js";
 import {
   renderNotesFormFromDraft,
@@ -13,14 +14,19 @@ import {
 } from "./modules/notes.js";
 
 const state = {
-  activeSection: "notes",
+  activeSection: "todo",
   theme: localStorage.getItem("theme") || "dark",
   todo: {
     list: localStorage.getItem("todoList")
       ? JSON.parse(localStorage.getItem("todoList"))
       : [],
+    editingTodoId: localStorage.getItem("editingTodoId")
+      ? +localStorage.getItem("editingTodoId")
+      : null,
+    draftText: localStorage.getItem("todoDraftText") || "",
     filterBy: localStorage.getItem("todoListFilterBy") || "all",
   },
+
   notes: {
     list: localStorage.getItem("notesList")
       ? JSON.parse(localStorage.getItem("notesList"))
@@ -74,7 +80,8 @@ const renderApp = function () {
 const renderTodoScreen = function () {
   renderTodoFiltersTab(state);
   const filteredTodoList = filterTodoList(state);
-  renderTodoList(filteredTodoList);
+  renderTodoList(filteredTodoList, state.todo.editingTodoId);
+  renderTodoFormFromDraft(state);
   renderRemainingTodoCount(state);
 };
 

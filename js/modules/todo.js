@@ -1,6 +1,37 @@
-const persistTodos = function (state) {
+const persistTodoList = function (state) {
   localStorage.setItem("todoList", JSON.stringify(state.todo.list));
+};
+
+const persistTodoListFilterBy = function (state) {
   localStorage.setItem("todoListFilterBy", state.todo.filterBy);
+};
+
+const persistEditingTodoId = function (state) {
+  if (state.todo.editingTodoId) {
+    localStorage.setItem("editingTodoId", state.todo.editingTodoId);
+  } else {
+    localStorage.removeItem("editingTodoId");
+  }
+};
+
+const persistTodoDraftText = function (state) {
+  localStorage.setItem("todoDraftText", state.todo.draftText);
+};
+
+const persistTodos = function (state) {
+  persistTodoList(state);
+  persistTodoListFilterBy(state);
+  persistEditingTodoId(state);
+  persistTodoDraftText(state);
+};
+
+const getTodoById = function (todoList, id) {
+  return todoList.find((t) => t.id === +id);
+};
+
+const clearEditingState = function (state) {
+  state.todo.editingTodoId = null;
+  state.todo.draftText = "";
 };
 
 const getTodoCheckbox = function (todo) {
@@ -9,27 +40,6 @@ const getTodoCheckbox = function (todo) {
   checkbox.checked = todo.isCompleted;
   checkbox.dataset.action = "complete";
   return checkbox;
-};
-const getTodoinputText = function (todo) {
-  const inputTextEle = document.createElement("input");
-  inputTextEle.value = todo.text;
-  inputTextEle.classList.add("text");
-  inputTextEle.dataset.action = "input-text";
-  return inputTextEle;
-};
-const getTodoUpdateBtn = function () {
-  const updateBtn = document.createElement("button");
-  updateBtn.type = "button";
-  updateBtn.textContent = "✅";
-  updateBtn.dataset.action = "update";
-  return updateBtn;
-};
-const getTodoCancelBtn = function () {
-  const cancelBtn = document.createElement("button");
-  cancelBtn.type = "button";
-  cancelBtn.textContent = "❌";
-  cancelBtn.dataset.action = "cancel";
-  return cancelBtn;
 };
 const getTodoSpan = function (todo) {
   const span = document.createElement("span");
@@ -53,77 +63,90 @@ const getTodoDeleteBtn = function () {
 };
 
 const setUpAddTodoEvent = function (state, render) {
-  const todoForm = document.querySelector(".todo-form");
+  const handleDraftChange = function (event) {
+    const input = event.target;
+
+    switch (input.name) {
+      case "todo-input":
+        state.todo.draftText = input.value;
+        break;
+    }
+  };
 
   const addTodo = function (event) {
     event.preventDefault();
 
-    if (!todoForm) return;
+    if (state.todo.editingTodoId) {
+      const todo = getTodoById(state.todo.list, state.todo.editingTodoId);
+      if (!todo) return;
 
-    const inputEle = todoForm.querySelector('[name="todo-input"]');
-    if (!inputEle) return;
+      todo.text = state.todo.draftText.trim();
+    } else {
+      const todo = {
+        id: Date.now(),
+        text: state.todo.draftText.trim(),
+        isCompleted: false,
+        createdAt: Date.now(),
+      };
 
-    const input = inputEle.value.trim();
-    if (!input) return;
+      state.todo.list.push(todo);
+    }
 
-    const todo = {
-      id: Date.now(),
-      text: input.trim(),
-      isCompleted: false,
-      isEditing: false,
-      createdAt: Date.now(),
-    };
-
-    state.todo.list.push(todo);
-    inputEle.value = "";
-
+    event.target.reset();
+    clearEditingState(state);
     persistTodos(state);
     render();
   };
 
-  if (todoForm) todoForm.addEventListener("submit", addTodo);
+  const cancelTodo = function (event) {
+    clearEditingState(state);
+    persistTodos(state);
+    render();
+  };
+
+  const todoForm = document.querySelector(".todo-form");
+
+  if (todoForm) {
+    todoForm.addEventListener("input", handleDraftChange);
+    todoForm.addEventListener("submit", addTodo);
+    todoForm.addEventListener("reset", cancelTodo);
+  }
 };
 
 const setUpTodoActionsEvent = function (state, render) {
-  const getTodoAndTodoDivFromEvent = function (event, state) {
+  const getTodoIdFromEvent = function (event) {
     const todoDiv = event.target.closest(".todo");
     if (!todoDiv) return {};
 
-    const todo = state.todo.list.find((t) => t.id === +todoDiv.dataset.id);
-    return { todo, todoDiv };
+    return +todoDiv.dataset.id;
   };
 
-  const toggleEditCancelTodo = function (event, state) {
-    const { todo } = getTodoAndTodoDivFromEvent(event, state);
-    if (!todo) return;
+  const enableEditTodo = function (event, state) {
+    const todoId = getTodoIdFromEvent(event);
+    if (!todoId) return;
 
-    todo.isEditing = !todo.isEditing;
-  };
+    const todo = getTodoById(state.todo.list, todoId);
 
-  const updateTodo = function (event, state) {
-    const { todo, todoDiv } = getTodoAndTodoDivFromEvent(event, state);
-    if (!todo) return;
-
-    const inputTextEle = todoDiv.querySelector("[data-action=input-text]");
-    if (!inputTextEle) return;
-
-    const value = inputTextEle.value.trim();
-    if (!value) return;
-
-    todo.text = value;
+    state.todo.editingTodoId = todoId;
+    state.todo.draftText = todo.text;
   };
 
   const deleteTodo = function (event, state) {
-    const todoDiv = event.target.closest(".todo");
-    if (!todoDiv) return;
+    const todoId = getTodoIdFromEvent(event);
+    if (!todoId) return;
 
-    state.todo.list = state.todo.list.filter(
-      (t) => t.id !== +todoDiv.dataset.id,
-    );
+    state.todo.list = state.todo.list.filter((t) => t.id !== todoId);
+
+    if (state.todo.editingTodoId === todoId) {
+      clearEditingState(state);
+    }
   };
 
   const completeTodo = function (event, state) {
-    const { todo } = getTodoAndTodoDivFromEvent(event, state);
+    const todoId = getTodoIdFromEvent(event);
+    if (!todoId) return;
+
+    const todo = getTodoById(state.todo.list, todoId);
     if (!todo) return;
 
     todo.isCompleted = !todo.isCompleted;
@@ -135,15 +158,7 @@ const setUpTodoActionsEvent = function (state, render) {
 
     switch (button.dataset.action) {
       case "edit": {
-        toggleEditCancelTodo(event, state);
-        persistTodos(state);
-        render();
-        break;
-      }
-
-      case "update": {
-        updateTodo(event, state);
-        toggleEditCancelTodo(event, state);
+        enableEditTodo(event, state);
         persistTodos(state);
         render();
         break;
@@ -153,12 +168,6 @@ const setUpTodoActionsEvent = function (state, render) {
         deleteTodo(event, state);
         persistTodos(state);
         render();
-        break;
-      }
-
-      case "cancel": {
-        toggleEditCancelTodo(event, state);
-        persistTodos(state);
         break;
       }
     }
@@ -171,33 +180,27 @@ const setUpTodoActionsEvent = function (state, render) {
     switch (input.dataset.action) {
       case "complete": {
         completeTodo(event, state);
+        persistTodos(state);
         render();
-        break;
-      }
-
-      case "input-text": {
-        // do nothing let the user type in input
         break;
       }
     }
   };
 
-  const todoList = document.querySelector(".todo-list");
+  const todoListDiv = document.querySelector(".todo-list");
 
-  if (todoList) {
-    todoList.addEventListener("click", handleTodoClick);
-    todoList.addEventListener("change", handleTodoChange);
+  if (todoListDiv) {
+    todoListDiv.addEventListener("click", handleTodoClick);
+    todoListDiv.addEventListener("change", handleTodoChange);
   }
 };
 
 const setUpTabChangeEvent = function (state, render) {
   const handleTabChange = function (event) {
     const todoFilterEle = event.target.closest("button");
-
     if (!todoFilterEle) return;
 
     const filterBy = todoFilterEle.dataset.filter;
-
     if (!filterBy) return;
 
     state.todo.filterBy = filterBy;
@@ -247,7 +250,7 @@ export const filterTodoList = function (state) {
   }
 };
 
-export const renderTodoList = (todoList) => {
+export const renderTodoList = (todoList, editingTodoId) => {
   const todoListEle = document.querySelector(".todo-list");
   if (!todoListEle) return;
 
@@ -261,19 +264,12 @@ export const renderTodoList = (todoList) => {
     const checkbox = getTodoCheckbox(todo);
     todoDiv.appendChild(checkbox);
 
-    if (todo.isEditing) {
-      const inputTextEle = getTodoinputText(todo);
-      todoDiv.appendChild(inputTextEle);
+    const span = getTodoSpan(todo);
+    todoDiv.appendChild(span);
 
-      const updateBtn = getTodoUpdateBtn();
-      todoDiv.appendChild(updateBtn);
-
-      const cancelBtn = getTodoCancelBtn();
-      todoDiv.appendChild(cancelBtn);
+    if (todo.id === editingTodoId) {
+      todoDiv.classList.add("active");
     } else {
-      const span = getTodoSpan(todo);
-      todoDiv.appendChild(span);
-
       const editBtn = getTodoEditBtn();
       todoDiv.appendChild(editBtn);
     }
@@ -310,4 +306,15 @@ export const renderTodoFiltersTab = function (state) {
     const isActive = item.dataset.filter === state.todo.filterBy;
     item.classList.toggle("active", isActive);
   }
+};
+
+export const renderTodoFormFromDraft = function (state) {
+  const todoForm = document.querySelector(".todo-form");
+  if (!todoForm) return;
+
+  const submitBtn = todoForm.querySelector(".add-todo");
+  if (!submitBtn) return;
+
+  todoForm.elements["todo-input"].value = state.todo.draftText;
+  submitBtn.textContent = state.todo.editingTodoId ? "Update" : "Add";
 };
