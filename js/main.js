@@ -5,15 +5,33 @@ import {
   renderRemainingTodoCount,
   renderTodoFiltersTab,
 } from "./modules/todo.js";
+import {
+  renderNotesFormFromDraft,
+  renderNotesList,
+  setUpNotesEvent,
+  sortNotesList,
+} from "./modules/notes.js";
 
 const state = {
-  activeSection: "todo",
+  activeSection: "notes",
   theme: localStorage.getItem("theme") || "dark",
   todo: {
     list: localStorage.getItem("todoList")
       ? JSON.parse(localStorage.getItem("todoList"))
       : [],
     filterBy: localStorage.getItem("todoListFilterBy") || "all",
+  },
+  notes: {
+    list: localStorage.getItem("notesList")
+      ? JSON.parse(localStorage.getItem("notesList"))
+      : [],
+    selectedNoteId: localStorage.getItem("notesSelectedNoteId")
+      ? +localStorage.getItem("notesSelectedNoteId")
+      : null,
+    draft: localStorage.getItem("notesDraft")
+      ? JSON.parse(localStorage.getItem("notesDraft"))
+      : { title: "", desc: "" },
+    sortDirection: localStorage.getItem("notesSortDirection") || "desc",
   },
 };
 
@@ -47,14 +65,40 @@ const renderContent = function () {
   });
 };
 
-const render = function () {
+const renderApp = function () {
   renderTheme();
   renderSidebar();
   renderContent();
+};
+
+const renderTodoScreen = function () {
   renderTodoFiltersTab(state);
   const filteredTodoList = filterTodoList(state);
   renderTodoList(filteredTodoList);
   renderRemainingTodoCount(state);
+};
+
+const renderNotesScreen = function () {
+  const sortedNotes = sortNotesList(
+    state.notes.list,
+    state.notes.sortDirection,
+  );
+  renderNotesList(sortedNotes, state.notes.selectedNoteId);
+  renderNotesFormFromDraft(state);
+};
+
+const render = function () {
+  renderApp();
+
+  switch (state.activeSection) {
+    case "todo":
+      renderTodoScreen();
+      break;
+
+    case "notes":
+      renderNotesScreen();
+      break;
+  }
 };
 
 (function () {
@@ -89,5 +133,6 @@ const render = function () {
 })();
 
 setupTodoEvents(state, render);
+setUpNotesEvent(state, render);
 
 render();

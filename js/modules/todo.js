@@ -1,3 +1,8 @@
+const persistTodos = function (state) {
+  localStorage.setItem("todoList", JSON.stringify(state.todo.list));
+  localStorage.setItem("todoListFilterBy", state.todo.filterBy);
+};
+
 const getTodoCheckbox = function (todo) {
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
@@ -72,7 +77,8 @@ const setUpAddTodoEvent = function (state, render) {
     state.todo.list.push(todo);
     inputEle.value = "";
 
-    storeTodoListAndCallRender(state.todo.list, render);
+    persistTodos(state);
+    render();
   };
 
   if (todoForm) todoForm.addEventListener("submit", addTodo);
@@ -130,26 +136,29 @@ const setUpTodoActionsEvent = function (state, render) {
     switch (button.dataset.action) {
       case "edit": {
         toggleEditCancelTodo(event, state);
-        storeTodoListAndCallRender(state.todo.list, render);
+        persistTodos(state);
+        render();
         break;
       }
 
       case "update": {
         updateTodo(event, state);
         toggleEditCancelTodo(event, state);
-        storeTodoListAndCallRender(state.todo.list, render);
+        persistTodos(state);
+        render();
         break;
       }
 
       case "delete": {
         deleteTodo(event, state);
-        storeTodoListAndCallRender(state.todo.list, render);
+        persistTodos(state);
+        render();
         break;
       }
 
       case "cancel": {
         toggleEditCancelTodo(event, state);
-        storeTodoListAndCallRender(state.todo.list, render);
+        persistTodos(state);
         break;
       }
     }
@@ -162,7 +171,7 @@ const setUpTodoActionsEvent = function (state, render) {
     switch (input.dataset.action) {
       case "complete": {
         completeTodo(event, state);
-        storeTodoListAndCallRender(state.todo.list, render);
+        render();
         break;
       }
 
@@ -181,11 +190,6 @@ const setUpTodoActionsEvent = function (state, render) {
   }
 };
 
-const storeTodoListAndCallRender = function (list, render) {
-  localStorage.setItem("todoList", JSON.stringify(list));
-  render();
-};
-
 const setUpTabChangeEvent = function (state, render) {
   const handleTabChange = function (event) {
     const todoFilterEle = event.target.closest("button");
@@ -198,7 +202,7 @@ const setUpTabChangeEvent = function (state, render) {
 
     state.todo.filterBy = filterBy;
 
-    localStorage.setItem("todoListFilterBy", filterBy);
+    persistTodos(state);
 
     render();
   };
@@ -212,7 +216,8 @@ const setUpClearCompletedEvent = function (state, render) {
   const handleClearCompleted = function () {
     state.todo.list = state.todo.list.filter((t) => !t.isCompleted);
 
-    storeTodoListAndCallRender(state.todo.list, render);
+    persistTodos(state);
+    render();
   };
 
   const clearCompletedBtn = document.querySelector(".clear-completed");

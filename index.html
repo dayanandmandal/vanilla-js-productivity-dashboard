@@ -64,7 +64,34 @@
         </section>
       </section>
       <section class="page-section" data-section="notes">
-        <h2>Notes</h2>
+        <div class="notes-wrap">
+          <div class="notes-list">
+            <h3>
+              Notes List
+              <button type="button" class="notes-sort">⇅</button>
+            </h3>
+            <div class="notes"></div>
+          </div>
+          <div class="notes-form-wrap">
+            <form class="notes-form" data-action="new">
+              <input
+                type="text"
+                name="notes-title"
+                placeholder="Enter title"
+                required
+              />
+              <textarea
+                name="notes-desc"
+                class="notes-desc"
+                placeholder="Enter description"
+              ></textarea>
+              <div class="action-wrap">
+                <button type="submit" class="save-note">Save</button>
+                <button type="reset" class="cancel-note">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
       <section class="page-section" data-section="timer">
         <h2>Timer</h2>

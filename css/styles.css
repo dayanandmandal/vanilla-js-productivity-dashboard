@@ -90,7 +90,7 @@ button.active {
   background-color: var(--color-primary-bg);
 }
 
-[data-display=none] {
+[data-display="none"] {
   display: none;
 }
 
@@ -120,7 +120,7 @@ button.active {
 
 .todo.completed .text {
   text-decoration: line-through;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .todo-filters {
@@ -142,4 +142,115 @@ button.active {
   margin: var(--space-sm) auto;
   border-bottom: 2px solid var(--color-border);
   cursor: pointer;
+}
+
+.notes-wrap {
+  display: flex;
+}
+
+.notes-list {
+  flex: 1;
+}
+
+.notes-form-wrap {
+  width: 400px;
+}
+
+.notes-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.notes-desc {
+  height: 200px;
+}
+
+.action-wrap {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+input,
+textarea,
+button {
+  background-color: var(--color-selectable-bg);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+button:hover {
+  opacity: 0.7;
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.card {
+  border: 1px solid var(--color-card);
+  padding: var(--space-sm) var(--space-md) var(--space-xl);
+  background-color: var(--color-bg);
+  color: var(--color-card);
+  border-radius: var(--space-sm);
+  position: relative;
+}
+
+.card .card-action {
+  display: none;
+  position: absolute;
+  bottom: var(--space-xs);
+}
+
+.card:hover .card-action {
+  display: flex;
+  gap: calc(var(--space-lg));
+}
+
+.card .card-action button {
+  border-radius: 50%;
+  bottom: var(--space-xs);
+  border: none;
+  padding: var(--space-xs);
+  opacity: 1;
+}
+.card .card-action button:hover {
+  background-color: var(--color-selectable-bg-hover);
+}
+
+.card.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.no-notes {
+  width: 200%;
+  margin-top: var(--space-xl);
+}
+
+.no-notes * {
+  text-align: center;
+}
+
+.notes-sort,
+#theme-toggle {
+  border-radius: var(--space-xs);
+  border: none;
+  opacity: 1;
+}
+
+.notes-sort:hover,
+#theme-toggle:hover {
+  background-color: var(--color-selectable-bg-hover);
+}
+
+.card .desc {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
