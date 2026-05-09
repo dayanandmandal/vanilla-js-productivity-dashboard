@@ -2,12 +2,12 @@ import { getTimestamps } from "../helpers/utils.js";
 
 const persistTodoState = function (state) {
   localStorage.setItem("todoList", JSON.stringify(state.todo.list));
-  localStorage.setItem("todoListFilterBy", state.todo.filterBy);
-  localStorage.setItem("todoDraftText", state.todo.draftText);
+  localStorage.setItem(STORAGE_KEYS.TODO_FILTER, state.todo.filterBy);
+  localStorage.setItem(STORAGE_KEYS.TODO_DRAFT, state.todo.draftText);
   if (state.todo.editingTodoId) {
-    localStorage.setItem("editingTodoId", state.todo.editingTodoId);
+    localStorage.setItem(STORAGE_KEYS.TODO_EDITING_ID, state.todo.editingTodoId);
   } else {
-    localStorage.removeItem("editingTodoId");
+    localStorage.removeItem(STORAGE_KEYS.TODO_EDITING_ID);
   }
 };
 
@@ -308,5 +308,6 @@ export const renderTodoFormFromDraft = function (state) {
   if (!submitBtn) return;
 
   todoForm.elements["todo-input"].value = state.todo.draftText;
+  todoForm.dataset.mode = state.todo.editingTodoId ? "edit" : "create";
   submitBtn.textContent = state.todo.editingTodoId ? "Update" : "Add";
 };

@@ -12,32 +12,33 @@ import {
   setUpNotesEvent,
   sortNotesList,
 } from "./modules/notes.js";
+import { STORAGE_KEYS } from "./helpers/constants.js";
 
 const state = {
   activeSection: "todo",
-  theme: localStorage.getItem("theme") || "dark",
+  theme: localStorage.getItem(STORAGE_KEYS.THEME) || "dark",
   todo: {
     list: localStorage.getItem("todoList")
       ? JSON.parse(localStorage.getItem("todoList"))
       : [],
-    editingTodoId: localStorage.getItem("editingTodoId")
-      ? +localStorage.getItem("editingTodoId")
+    editingTodoId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
+      ? +localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
       : null,
-    draftText: localStorage.getItem("todoDraftText") || "",
-    filterBy: localStorage.getItem("todoListFilterBy") || "all",
+    draftText: localStorage.getItem(STORAGE_KEYS.TODO_DRAFT) || "",
+    filterBy: localStorage.getItem(STORAGE_KEYS.TODO_FILTER) || "all",
   },
 
   notes: {
-    list: localStorage.getItem("notesList")
-      ? JSON.parse(localStorage.getItem("notesList"))
+    list: localStorage.getItem(STORAGE_KEYS.NOTES_LIST)
+      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_LIST))
       : [],
-    selectedNoteId: localStorage.getItem("notesSelectedNoteId")
-      ? +localStorage.getItem("notesSelectedNoteId")
+    selectedNoteId: localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
+      ? +localStorage.getItem(STORAGE_KEYS.NOTES_SELECTED_ID)
       : null,
-    draft: localStorage.getItem("notesDraft")
-      ? JSON.parse(localStorage.getItem("notesDraft"))
+    draft: localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT)
+      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES_DRAFT))
       : { title: "", desc: "" },
-    sortDirection: localStorage.getItem("notesSortDirection") || "desc",
+    sortDirection: localStorage.getItem(STORAGE_KEYS.NOTES_SORT) || "desc",
   },
 };
 
@@ -127,7 +128,7 @@ const render = function () {
 (function () {
   const handleThemeToggle = function () {
     state.theme = state.theme === "dark" ? "light" : "dark";
-    localStorage.setItem("theme", state.theme);
+    localStorage.setItem(STORAGE_KEYS.THEME, state.theme);
 
     render();
   };

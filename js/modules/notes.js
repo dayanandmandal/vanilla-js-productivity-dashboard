@@ -1,13 +1,13 @@
 import { getTimestamps } from "../helpers/utils.js";
 
 const persistNotesState = function (state) {
-  localStorage.setItem("notesList", JSON.stringify(state.notes.list));
-  localStorage.setItem("notesDraft", JSON.stringify(state.notes.draft));
-  localStorage.setItem("notesSortDirection", state.notes.sortDirection);
+  localStorage.setItem(STORAGE_KEYS.NOTES_LIST, JSON.stringify(state.notes.list));
+  localStorage.setItem(STORAGE_KEYS.NOTES_DRAFT, JSON.stringify(state.notes.draft));
+  localStorage.setItem(STORAGE_KEYS.NOTES_SORT, state.notes.sortDirection);
   if (state.notes.selectedNoteId) {
-    localStorage.setItem("notesSelectedNoteId", state.notes.selectedNoteId);
+    localStorage.setItem(STORAGE_KEYS.NOTES_SELECTED_ID, state.notes.selectedNoteId);
   } else {
-    localStorage.removeItem("notesSelectedNoteId");
+    localStorage.removeItem(STORAGE_KEYS.NOTES_SELECTED_ID);
   }
 };
 
