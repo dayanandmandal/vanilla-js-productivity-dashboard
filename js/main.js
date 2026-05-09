@@ -15,12 +15,13 @@ import {
 import { STORAGE_KEYS } from "./helpers/constants.js";
 
 const state = {
-  activeSection: "todo",
-  theme: "dark",
+  activeSection:
+    localStorage.getItem(STORAGE_KEYS.ACTIVE_SECTION) || "dashboard",
+  theme: localStorage.getItem(STORAGE_KEYS.THEME) || "light",
 
   todo: {
-    data: localStorage.getItem("todoList")
-      ? JSON.parse(localStorage.getItem("todoList"))
+    data: localStorage.getItem(STORAGE_KEYS.TODO_LIST)
+      ? JSON.parse(localStorage.getItem(STORAGE_KEYS.TODO_LIST))
       : [],
     ui: {
       selectedId: localStorage.getItem(STORAGE_KEYS.TODO_EDITING_ID)
@@ -45,6 +46,11 @@ const state = {
       sortDirection: localStorage.getItem(STORAGE_KEYS.NOTES_SORT) || "desc",
     },
   },
+};
+
+const persistAppData = function () {
+  localStorage.setItem(STORAGE_KEYS.ACTIVE_SECTION, state.activeSection);
+  localStorage.setItem(STORAGE_KEYS.THEME, state.theme);
 };
 
 const themeToggleBtn = document.querySelector("#theme-toggle");
@@ -122,6 +128,8 @@ const render = function () {
 
     state.activeSection = section;
 
+    persistAppData();
+
     render();
   };
 
@@ -133,7 +141,8 @@ const render = function () {
 (function () {
   const handleThemeToggle = function () {
     state.theme = state.theme === "dark" ? "light" : "dark";
-    localStorage.setItem(STORAGE_KEYS.THEME, state.theme);
+
+    persistAppData();
 
     render();
   };

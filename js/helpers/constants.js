@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
   THEME: "theme",
+  ACTIVE_SECTION: "activeSection",
 
   TODO_LIST: "todoList",
   TODO_FILTER: "todoListFilterBy",
