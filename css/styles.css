@@ -15,7 +15,7 @@ body {
   color: var(--color-text);
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
-  grid-template-rows: var(--header-height) 1fr;
+  grid-template-rows: 1fr;
   min-height: 100vh;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
@@ -26,13 +26,6 @@ body {
   padding: 0 var(--space-lg);
 }
 
-body .header {
-  grid-column: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--header-height);
-}
 body .sidebar {
   grid-row: 1 / span 2;
   background-color: var(--color-selectable-bg);
@@ -40,6 +33,12 @@ body .sidebar {
 }
 body .main {
   grid-column: 2;
+}
+
+.sidebar nav {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar ul {
@@ -70,6 +69,12 @@ body .main {
 .nav-wrap a {
   text-decoration: none;
   color: inherit;
+}
+
+.nav-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
 }
 
 #theme-toggle {

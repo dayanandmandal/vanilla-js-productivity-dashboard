@@ -51,7 +51,8 @@ const renderTheme = function () {
   document.body.classList.toggle("dark", state.app.theme === "dark");
 
   if (themeToggleBtn) {
-    themeToggleBtn.textContent = state.app.theme === "dark" ? "☀️" : "🌙";
+    themeToggleBtn.textContent =
+      state.app.theme === "dark" ? "☀️ Light Theme" : "🌙 Dark Theme";
   }
 };
 
