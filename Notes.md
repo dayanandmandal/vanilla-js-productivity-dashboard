@@ -71,3 +71,4 @@ Separate STATE LOGIC from DOM LOGIC - A fucntion should only works with STATE or
 
 - Render layer should not know business logic.
 
+- input, textarea, button, select are some of the several form elements that do not automatically inherit font properties from their parents in most browsers (Chrome, Safari, and Edge).

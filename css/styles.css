@@ -1,4 +1,6 @@
-* {
+*,
+*::after,
+*::before {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -16,6 +18,7 @@ body {
   grid-template-rows: var(--header-height) 1fr;
   min-height: 100vh;
   font-family: var(--font-family);
+  font-size: var(--font-size-base);
   line-height: var(--line-height);
 }
 
@@ -176,7 +179,10 @@ button.active {
 
 input,
 textarea,
-button {
+button,
+select {
+  font-family: inherit;
+  font-size: inherit;
   background-color: var(--color-selectable-bg);
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
