@@ -40,7 +40,7 @@ const getTodoCheckbox = function (todo) {
 };
 const getTodoSpan = function (todo) {
   const span = document.createElement("span");
-  span.classList.add("text");
+  span.classList.add("todo-text");
   span.textContent = todo.text;
   return span;
 };
@@ -49,6 +49,7 @@ const getTodoEditBtn = function () {
   editBtn.type = "button";
   editBtn.textContent = "✏️";
   editBtn.dataset.action = "edit";
+  editBtn.classList.add("btn", "btn-icon", "btn-ghost");
   return editBtn;
 };
 const getTodoDeleteBtn = function () {
@@ -56,13 +57,30 @@ const getTodoDeleteBtn = function () {
   deleteBtn.type = "button";
   deleteBtn.textContent = "🗑️";
   deleteBtn.dataset.action = "delete";
+  deleteBtn.classList.add("btn", "btn-icon", "btn-ghost", "danger");
   return deleteBtn;
 };
+
 const getTodotimestampsP = function (todo) {
   const timestampsP = document.createElement("p");
   timestampsP.textContent = getTimestamps(todo.createdAt, todo.updatedAt);
   timestampsP.classList.add("todo-time");
   return timestampsP;
+};
+
+const getTodoActionDiv = function (todo, editingTodoId) {
+  const actionDiv = document.createElement("div");
+  actionDiv.classList.add("todo-actions");
+
+  if (todo.id !== editingTodoId) {
+    const editBtn = getTodoEditBtn();
+    actionDiv.appendChild(editBtn);
+  }
+
+  const deleteBtn = getTodoDeleteBtn();
+  actionDiv.appendChild(deleteBtn);
+
+  return actionDiv;
 };
 
 const setUpAddTodoEvent = function (state, render) {
@@ -191,7 +209,7 @@ const setUpTodoActionsEvent = function (state, render) {
 
 const setUpTabChangeEvent = function (state, render) {
   const handleTabChange = function (event) {
-    const todoFilterEle = event.target.closest("button");
+    const todoFilterEle = event.target.closest(".tab");
     if (!todoFilterEle) return;
 
     const filterBy = todoFilterEle.dataset.filter;
@@ -204,7 +222,7 @@ const setUpTabChangeEvent = function (state, render) {
     render();
   };
 
-  const todoFilters = document.querySelector(".todo-filters");
+  const todoFilters = document.querySelector("#todo-filters");
 
   if (todoFilters) todoFilters.addEventListener("click", handleTabChange);
 };
@@ -261,23 +279,26 @@ export const renderTodoList = (todoList, editingTodoId) => {
     todoDiv.dataset.id = todo.id;
 
     const checkbox = getTodoCheckbox(todo);
+    checkbox.classList.add("checkbox");
     todoDiv.appendChild(checkbox);
 
+    const todoContent = document.createElement("div");
+    todoContent.classList.add("todo-content");
+
     const span = getTodoSpan(todo);
-    todoDiv.appendChild(span);
+    todoContent.appendChild(span);
+
+    const timestampsP = getTodotimestampsP(todo);
+    todoContent.appendChild(timestampsP);
+
+    todoDiv.appendChild(todoContent);
 
     if (todo.id === editingTodoId) {
       todoDiv.classList.add("active");
-    } else {
-      const editBtn = getTodoEditBtn();
-      todoDiv.appendChild(editBtn);
     }
 
-    const deleteBtn = getTodoDeleteBtn();
-    todoDiv.appendChild(deleteBtn);
-
-    const timestampsP = getTodotimestampsP(todo);
-    todoDiv.appendChild(timestampsP);
+    const todoActionDiv = getTodoActionDiv(todo, editingTodoId);
+    todoDiv.appendChild(todoActionDiv);
 
     if (todo.isCompleted) todoDiv.classList.add("completed");
     todoListEle.appendChild(todoDiv);
@@ -301,7 +322,7 @@ export const renderRemainingTodoCount = function (state) {
 };
 
 export const renderTodoFiltersTab = function (state) {
-  const items = document.querySelectorAll(".todo-filters button");
+  const items = document.querySelectorAll("#todo-filters .tab");
   if (!items.length) return;
 
   for (let item of items) {

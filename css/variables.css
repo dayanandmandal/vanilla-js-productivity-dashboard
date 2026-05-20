@@ -1,36 +1,151 @@
+/* =========================================================
+   🎨 DESIGN TOKENS
+   ========================================================= */
+
 :root {
-  /* ========================
-     🎨 COLORS (LIGHT THEME)
-     ======================== */
-  --color-bg: #ffffff;
-  --color-card: #111827;
+  /* =======================================================
+     🎨 BRAND
+     ======================================================= */
 
-  --color-primary: #c3392c;
-  /* --color-primary-hover: #4338ca; */
-  --color-primary-bg: #ffefe5;
+  --primary: #7c4dff;
+  --primary-hover: #6938ef;
+  --primary-soft: #f3eeff;
 
-  --color-selectable-bg: #fcfaf8;
-  --color-selectable-bg-hover: #f2efed;
-  --color-text: #111827;
+  --focus-ring: rgba(124, 77, 255, 0.18);
 
-  --color-border: #e5e7eb;
+  /* =======================================================
+     🌍 APP
+     ======================================================= */
 
-  --color-success: #10b981;
-  --color-danger: #ef4444;
-  --color-warning: #f59e0b;
+  --app-bg: #f7f8fc;
 
-  /* ========================
+  --app-text: #101828;
+  --app-text-secondary: #667085;
+  --app-text-muted: #98a2b3;
+
+  --app-border: #e4e7ec;
+
+  /* =======================================================
+     📦 SURFACE
+     ======================================================= */
+
+  --surface-bg: #ffffff;
+  --surface-bg-hover: #f8fafc;
+
+  --surface-text: #101828;
+  --surface-text-secondary: #667085;
+  --surface-text-muted: #98a2b3;
+
+  --surface-border: #e4e7ec;
+
+  /* =======================================================
+     📚 SIDEBAR
+     ======================================================= */
+
+  --sidebar-bg: #ffffff;
+
+  --sidebar-text: #101828;
+  --sidebar-text-secondary: #667085;
+
+  --sidebar-item-bg-hover: #f3f0ff;
+  --sidebar-item-bg-active: #ede9fe;
+
+  --sidebar-item-text: #344054;
+  --sidebar-item-text-active: #7c4dff;
+
+  /* =======================================================
+     🔘 BUTTONS
+     ======================================================= */
+
+  --button-primary-bg: #7c4dff;
+  --button-primary-bg-hover: #6938ef;
+  --button-primary-text: #ffffff;
+
+  --button-secondary-bg: #ffffff;
+  --button-secondary-bg-hover: #f8fafc;
+
+  --button-secondary-text: #101828;
+  --button-secondary-border: #d0d5dd;
+
+  --button-disabled-opacity: 0.6;
+
+  --button-ghost-bg: transparent;
+  --button-ghost-bg-hover: rgba(124, 77, 255, 0.08);
+
+  --button-ghost-text: var(--app-text);
+
+  --button-ghost-border: var(--app-border);
+
+  /* =======================================================
+     📝 INPUT
+     ======================================================= */
+
+  --input-bg: #ffffff;
+
+  --input-text: #101828;
+  --input-placeholder: #98a2b3;
+
+  --input-border: #d0d5dd;
+  --input-border-focus: #7c4dff;
+
+  /* =======================================================
+     📑 TABS
+     ======================================================= */
+
+  --tab-bg-hover: #f3f0ff;
+  --tab-bg-active: #ede9fe;
+
+  --tab-text: #101828;
+  --tab-text-hover: #101828;
+  --tab-text-active: #7c4dff;
+
+  --tab-border-active: #8b5cf6;
+
+  /* =======================================================
+     🚦 STATUS
+     ======================================================= */
+
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --success-border: #86efac;
+
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --danger-border: #fca5a5;
+
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+  --warning-border: #fcd34d;
+
+  --info-bg: #dbeafe;
+  --info-text: #1d4ed8;
+  --info-border: #93c5fd;
+
+  /* =======================================================
+     🟢 PRIORITY
+     ======================================================= */
+
+  --priority-high-bg: #fee2e2;
+  --priority-high-text: #991b1b;
+
+  --priority-medium-bg: #fef3c7;
+  --priority-medium-text: #92400e;
+
+  --priority-low-bg: #dcfce7;
+  --priority-low-text: #166534;
+
+  /* =======================================================
      🔤 TYPOGRAPHY
-     ======================== */
+     ======================================================= */
+
   --font-family: "Inter", Arial, sans-serif;
 
-  --font-size-xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.875rem; /* 14px */
-  --font-size-base: 1rem; /* 16px */
-
-  --font-size-md: 1.125rem; /* 18px */
-  --font-size-lg: 1.25rem; /* 20px */
-  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -38,55 +153,235 @@
 
   --line-height: 1.5;
 
-  /* ========================
-     📏 SPACING SYSTEM
-     ======================== */
+  /* =======================================================
+     📏 SPACING
+     ======================================================= */
+
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
 
-  /* ========================
-     📦 BORDER & RADIUS
-     ======================== */
+  /* =======================================================
+     📦 BORDER / RADIUS
+     ======================================================= */
+
   --border-width: 1px;
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 
-  /* ========================
+  /* =======================================================
      🌫️ SHADOWS
-     ======================== */
+     ======================================================= */
+
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
 
-  /* ========================
+  /* =======================================================
      🧱 LAYOUT
-     ======================== */
-  --header-height: 60px;
-  --sidebar-width: 220px;
+     ======================================================= */
 
-  /* ========================
+  --sidebar-width: 220px;
+  --header-height: 64px;
+
+  /* =======================================================
+     🪟 OVERLAY
+     ======================================================= */
+
+  --overlay-bg: rgba(0, 0, 0, 0.45);
+
+  /* =======================================================
      ⚡ TRANSITIONS
-     ======================== */
+     ======================================================= */
+
   --transition-fast: 0.2s ease;
   --transition-medium: 0.3s ease;
+
+  /* =======================================================
+     🔝 Z-INDEX
+     ======================================================= */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1010;
+  --z-modal: 1050;
+  --z-tooltip: 1100;
 }
 
+/* =========================================================
+   🌚 DARK MODE
+   ========================================================= */
+
 body.dark {
-  --color-bg: #252525;
-  --color-card: #f9fafb;
+  /* =======================================================
+     🎨 BRAND
+     ======================================================= */
 
-  --color-text: #f9fafb;
-  --color-text-muted: #9ca3af;
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-soft: rgba(139, 92, 246, 0.16);
 
-  --color-primary: #fff;
-  /* --color-primary-hover: #4338ca; */
-  --color-primary-bg: #555;
+  --focus-ring: rgba(139, 92, 246, 0.28);
 
-  --color-selectable-bg: #2b2b2b;
-  --color-selectable-bg-hover: #444;
+  /* =======================================================
+     🌍 APP
+     ======================================================= */
 
-  --color-border: #374151;
+  --app-bg: #0f172a;
+
+  --app-text: #f9fafb;
+  --app-text-secondary: #cbd5e1;
+  --app-text-muted: #94a3b8;
+
+  --app-border: #243041;
+
+  /* =======================================================
+     📦 SURFACE
+     ======================================================= */
+
+  --surface-bg: #111827;
+  --surface-bg-hover: #1f2937;
+
+  --surface-text: #f9fafb;
+  --surface-text-secondary: #cbd5e1;
+  --surface-text-muted: #94a3b8;
+
+  --surface-border: #243041;
+
+  /* =======================================================
+     📚 SIDEBAR
+     ======================================================= */
+
+  --sidebar-bg: #111827;
+
+  --sidebar-text: #f9fafb;
+  --sidebar-text-secondary: #cbd5e1;
+
+  --sidebar-item-bg-hover: #1e293b;
+  --sidebar-item-bg-active: #312e81;
+
+  --sidebar-item-text: #cbd5e1;
+  --sidebar-item-text-active: #a78bfa;
+
+  /* =======================================================
+     🔘 BUTTONS
+     ======================================================= */
+
+  --button-primary-bg: #8b5cf6;
+  --button-primary-bg-hover: #7c3aed;
+
+  --button-primary-text: #ffffff;
+
+  --button-secondary-bg: #1f2937;
+  --button-secondary-bg-hover: #334155;
+
+  --button-secondary-text: #f9fafb;
+  --button-secondary-border: #334155;
+
+  --button-disabled-opacity: 0.45;
+
+  --button-ghost-bg: transparent;
+  --button-ghost-bg-hover: rgba(139, 92, 246, 0.14);
+
+  --button-ghost-text: var(--app-text);
+
+  --button-ghost-border: #334155;
+
+  /* =======================================================
+     📝 INPUT
+     ======================================================= */
+
+  --input-bg: #1f2937;
+
+  --input-text: #f9fafb;
+  --input-placeholder: #94a3b8;
+
+  --input-border: #334155;
+  --input-border-focus: #8b5cf6;
+
+  /* =======================================================
+     📑 TABS
+     ======================================================= */
+
+  --tab-bg-hover: #1e293b;
+  --tab-bg-active: #312e81;
+
+  --tab-text: #e5e7eb;
+  --tab-text-hover: #ffffff;
+  --tab-text-active: #c4b5fd;
+
+  --tab-border-active: #8b5cf6;
+
+  /* =======================================================
+     🚦 STATUS
+     ======================================================= */
+
+  --success-bg: rgba(22, 163, 74, 0.18);
+  --success-text: #dcfce7;
+  --success-border: rgba(34, 197, 94, 0.35);
+
+  --danger-bg: rgba(220, 38, 38, 0.18);
+  --danger-text: #fee2e2;
+  --danger-border: rgba(248, 113, 113, 0.35);
+
+  --warning-bg: rgba(217, 119, 6, 0.18);
+  --warning-text: #fef3c7;
+  --warning-border: rgba(251, 191, 36, 0.35);
+
+  --info-bg: rgba(37, 99, 235, 0.18);
+  --info-text: #dbeafe;
+  --info-border: rgba(96, 165, 250, 0.35);
+
+  /* =======================================================
+     🟢 PRIORITY
+     ======================================================= */
+
+  --priority-high-bg: rgba(239, 68, 68, 0.18);
+  --priority-high-text: #fecaca;
+
+  --priority-medium-bg: rgba(245, 158, 11, 0.18);
+  --priority-medium-text: #fde68a;
+
+  --priority-low-bg: rgba(34, 197, 94, 0.18);
+  --priority-low-text: #bbf7d0;
+
+  /* =======================================================
+     🌫️ SHADOWS
+     ======================================================= */
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.45);
+
+  /* =======================================================
+     🧱 LAYOUT
+     ======================================================= */
+
+  --sidebar-width: 220px;
+  --header-height: 64px;
+
+  /* =======================================================
+     🪟 OVERLAY
+     ======================================================= */
+
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+
+  /* =======================================================
+     ⚡ TRANSITIONS
+     ======================================================= */
+
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+
+  /* =======================================================
+     🔝 Z-INDEX
+     ======================================================= */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1010;
+  --z-modal: 1050;
+  --z-tooltip: 1100;
 }

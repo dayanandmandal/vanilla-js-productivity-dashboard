@@ -1,0 +1,115 @@
+.notes-wrap {
+  display: flex;
+}
+
+.notes-list {
+  flex: 1;
+}
+
+.notes-form-wrap {
+  width: 400px;
+}
+
+.notes-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.notes-desc {
+  height: 200px;
+}
+
+.action-wrap {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.card {
+  border: 1px solid var(--color-card);
+  padding: var(--space-sm) var(--space-md) var(--space-xl);
+  background-color: var(--color-bg);
+  color: var(--color-text-on-surface);
+  border-radius: var(--space-sm);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.card .card-action {
+  display: none;
+  position: absolute;
+  bottom: var(--space-xs);
+}
+
+.card:hover .card-action {
+  display: flex;
+  gap: calc(var(--space-lg));
+}
+
+.card .card-action button {
+  border-radius: 50%;
+  bottom: var(--space-xs);
+  border: none;
+  padding: var(--space-xs);
+  opacity: 1;
+}
+.card .card-action button:hover {
+  background-color: var(--color-color-surface-hover);
+}
+
+.card.active {
+  border-color: var(--color-border-hover);
+  background: var(--color-surface-hover);
+}
+
+.no-notes {
+  width: 200%;
+  margin-top: var(--space-xl);
+}
+
+.no-notes * {
+  text-align: center;
+}
+
+.notes-sort {
+  border-radius: var(--space-xs);
+  border: none;
+  opacity: 1;
+}
+
+.notes-sort:hover {
+  background-color: var(--color-selectable-bg-hover);
+}
+
+.card .desc,
+.card .title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+}
+
+.card .title {
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+}
+.card .desc {
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+}
+
+.card .notes-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}

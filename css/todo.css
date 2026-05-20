@@ -1,0 +1,106 @@
+.add-todo {
+  cursor: pointer;
+}
+
+.todo-form {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.todo {
+  display: flex;
+  align-items: flex-start;
+
+  gap: var(--space-md);
+
+  padding: var(--space-md);
+
+  border: var(--border-width) solid var(--surface-border);
+
+  border-radius: var(--radius-lg);
+
+  background: var(--surface-bg);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.todo-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-xs);
+
+  min-width: 0;
+}
+
+.todo-text {
+  color: var(--surface-text);
+
+  font-size: var(--font-size-base);
+
+  font-weight: var(--font-weight-medium);
+
+  line-height: var(--line-height);
+
+  word-break: break-word;
+}
+
+.todo.completed .todo-text {
+  text-decoration: line-through;
+
+  color: var(--surface-text-muted);
+
+  opacity: 0.7;
+}
+
+.todo-time {
+  color: var(--surface-text-muted);
+
+  font-size: var(--font-size-xs);
+
+  margin: 0;
+}
+
+.todo-actions {
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-xs);
+
+  flex-shrink: 0;
+}
+
+.todo-empty {
+  padding: var(--space-xl);
+
+  text-align: center;
+
+  color: var(--surface-text-muted);
+
+  border: 2px dashed var(--surface-border);
+
+  border-radius: var(--radius-lg);
+}
+
+.todo-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}

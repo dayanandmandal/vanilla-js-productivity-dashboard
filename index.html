@@ -6,6 +6,8 @@
     <title>Productivity Dashboard</title>
     <link rel="stylesheet" href="./css/variables.css" />
     <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/todo.css" />
+    <link rel="stylesheet" href="./css/notes.css" />
     <link rel="stylesheet" href="./css/responsive.css" />
     <script type="module" src="./js/main.js"></script>
   </head>
@@ -30,7 +32,11 @@
           </li>
         </ul>
         <div class="nav-footer">
-          <button id="theme-toggle" aria-label="Toggle Theme"></button>
+          <button
+            id="theme-toggle"
+            class="btn btn-ghost"
+            aria-label="Toggle Theme"
+          ></button>
         </div>
       </nav>
     </aside>
@@ -40,21 +46,41 @@
       </section>
       <section class="page-section" data-section="todo">
         <h2>Todo</h2>
+        <form class="todo-form">
+          <input type="text" name="todo-input" class="input" required />
+          <button type="submit" class="btn btn-primary add-todo">Add</button>
+          <button type="reset" class="btn btn-secondary cancel-todo">
+            Cancel
+          </button>
+        </form>
         <section>
-          <form class="todo-form">
-            <input type="text" name="todo-input" required />
-            <button type="submit" class="add-todo">Add</button>
-            <button type="reset" class="cancel-todo">Cancel</button>
-          </form>
-          <div class="todo-filters">
-            <button data-filter="all">All</button>
-            <button data-filter="active">Active</button>
-            <button data-filter="done">Done</button>
+          <div class="tab-wrap" id="todo-filters">
+            <div class="tab" tabindex="0" data-filter="all">All</div>
+            <div class="tab" tabindex="0" data-filter="active">Active</div>
+            <div class="tab" tabindex="0" data-filter="done">Done</div>
           </div>
-          <div class="todo-list"></div>
+          <div class="todo-list">
+            <div class="todo" data-id="1">
+              <input type="checkbox" class="checkbox" />
+
+              <div class="todo-content">
+                <span class="todo-text"> Finish dashboard UI </span>
+
+                <p class="todo-time">Created at 20 May</p>
+              </div>
+
+              <div class="todo-actions">
+                <button type="button" class="btn btn-icon btn-ghost">✏️</button>
+
+                <button type="button" class="btn btn-icon btn-ghost danger">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
           <div class="todo-footer">
             <div class="remaining-todo-count"></div>
-            <button class="clear-completed">Clear Completed</button>
+            <button class="btn clear-completed">Clear Completed</button>
           </div>
         </section>
       </section>
@@ -63,7 +89,7 @@
           <div class="notes-list">
             <h3>
               Notes List
-              <button type="button" class="notes-sort">⇅</button>
+              <button type="button" class="btn notes-sort">⇅</button>
             </h3>
             <div class="notes"></div>
           </div>
@@ -73,16 +99,18 @@
                 type="text"
                 name="notes-title"
                 placeholder="Enter title"
+                class="input"
                 required
               />
               <textarea
                 name="notes-desc"
                 class="notes-desc"
                 placeholder="Enter description"
+                class="input"
               ></textarea>
               <div class="action-wrap">
-                <button type="submit" class="save-note">Save</button>
-                <button type="reset" class="cancel-note">Cancel</button>
+                <button type="submit" class="btn save-note">Save</button>
+                <button type="reset" class="btn cancel-note">Cancel</button>
               </div>
             </form>
           </div>
