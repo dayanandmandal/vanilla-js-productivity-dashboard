@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/todo.css" />
     <link rel="stylesheet" href="./css/notes.css" />
-    <link rel="stylesheet" href="./css/responsive.css" />
+    <!-- <link rel="stylesheet" href="./css/responsive.css" /> -->
     <script type="module" src="./js/main.js"></script>
   </head>
   <body>
@@ -87,10 +87,17 @@
       <section class="page-section" data-section="notes">
         <div class="notes-wrap">
           <div class="notes-list">
-            <h3>
-              Notes List
-              <button type="button" class="btn notes-sort">⇅</button>
-            </h3>
+            <div class="notes-header">
+              <div>
+                <h2>
+                  Notes
+                  <span class="notes-toolbar">
+                    <button class="btn btn-ghost btn-icon" data-action="sort">⇅</button>
+                  </span>
+                </h2>
+                <p>Organize your thoughts and tasks</p>
+              </div>
+            </div>
             <div class="notes"></div>
           </div>
           <div class="notes-form-wrap">
@@ -104,13 +111,25 @@
               />
               <textarea
                 name="notes-desc"
-                class="notes-desc"
+                class="notes-desc input"
                 placeholder="Enter description"
                 class="input"
               ></textarea>
               <div class="action-wrap">
-                <button type="submit" class="btn save-note">Save</button>
-                <button type="reset" class="btn cancel-note">Cancel</button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  data-role="save-note"
+                >
+                  Save
+                </button>
+                <button
+                  type="reset"
+                  class="btn btn-secondary"
+                  data-role="cancel-note"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>

@@ -151,31 +151,41 @@ const setUpNotesActionEvents = function (state, render) {
   notesEle.addEventListener("click", actionEvents);
 };
 
-const setUpSortEvent = function (state, render) {
-  const sortEvent = function () {
+const setUpToolbarEvent = function (state, render) {
+  const sortNotes = function () {
     state.notes.ui.sortDirection =
       state.notes.ui.sortDirection === "desc" ? "asc" : "desc";
-
-    persistNotesState(state);
-    render();
   };
 
-  const sortBtn = document.querySelector(".notes-sort");
+  const toolbarEvents = function (event) {
+    const button = event.target.closest("button");
+    if (!button) return;
+
+    switch (button.dataset.action) {
+      case "sort":
+        sortNotes(event);
+        persistNotesState(state);
+        render();
+        break;
+    }
+  };
+
+  const sortBtn = document.querySelector(".notes-toolbar");
   if (!sortBtn) return;
 
-  sortBtn.addEventListener("click", sortEvent);
+  sortBtn.addEventListener("click", toolbarEvents);
 };
 
 export const setUpNotesEvent = function (state, render) {
   setUpFormActionEvents(state, render);
   setUpNotesActionEvents(state, render);
-  setUpSortEvent(state, render);
+  setUpToolbarEvent(state, render);
 };
 
 const getCardDiv = function (note) {
-  const titleH5 = document.createElement("h5");
-  titleH5.textContent = note.title;
-  titleH5.classList.add("title");
+  const titleH4 = document.createElement("h4");
+  titleH4.textContent = note.title;
+  titleH4.classList.add("title");
 
   const descP = document.createElement("p");
   descP.textContent = note.desc;
@@ -187,15 +197,13 @@ const getCardDiv = function (note) {
 
   const editButton = document.createElement("button");
   editButton.textContent = "✏️";
-  editButton.classList.add("edit");
+  editButton.classList.add("btn", "btn-ghost", "btn-icon");
   editButton.dataset.action = "edit";
-  editButton.title = "Edit";
 
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "🗑️";
-  deleteButton.classList.add("delete");
+  deleteButton.classList.add("btn", "btn-ghost", "btn-icon");
   deleteButton.dataset.action = "delete";
-  deleteButton.title = "Delete";
 
   const actionDiv = document.createElement("div");
   actionDiv.classList.add("card-action");
@@ -206,7 +214,7 @@ const getCardDiv = function (note) {
   cardDiv.classList.add("card");
   cardDiv.dataset.id = note.id;
 
-  cardDiv.appendChild(titleH5);
+  cardDiv.appendChild(titleH4);
   cardDiv.appendChild(descP);
   cardDiv.appendChild(timestampsP);
   cardDiv.appendChild(actionDiv);
@@ -257,10 +265,10 @@ export const renderNotesFormFromDraft = function (state) {
   formEle.elements["notes-title"].value = state.notes.ui.draft.title;
   formEle.elements["notes-desc"].value = state.notes.ui.draft.desc;
 
-  const saveBtn = formEle.querySelector(".save-note");
+  const saveBtn = formEle.querySelector("[data-role='save-note']");
   if (!saveBtn) return;
 
-  saveBtn.innerHTML = state.notes.ui.editingId ? "Update" : "Save";
+  saveBtn.textContent = state.notes.ui.editingId ? "Update" : "Save";
 };
 
 export const sortNotesList = function (notesList, sortDirection) {

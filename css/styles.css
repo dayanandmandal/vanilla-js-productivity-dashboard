@@ -89,16 +89,6 @@ body .main {
   display: block;
 }
 
-.btn {
-  cursor: pointer;
-  padding: 3px 10px;
-}
-
-.btn.active {
-  color: var(--color-primary);
-  background-color: var(--color-primary-bg);
-}
-
 [data-display="none"] {
   display: none;
 }
