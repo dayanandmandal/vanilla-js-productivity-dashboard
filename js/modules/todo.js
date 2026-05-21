@@ -1,4 +1,10 @@
-import { getFullDateString } from "../helpers/utils.js";
+import {
+  getFullDateString,
+  getYYYYMMDDDateString,
+  isTodoActive,
+  isTodoCompleted,
+  isTodoOverdue,
+} from "../helpers/utils.js";
 import { STORAGE_KEYS, TODO_PRIORITY } from "../helpers/constants.js";
 
 const persistTodoState = function (state) {
@@ -62,12 +68,13 @@ const getTodoSpan = function (todo) {
   span.textContent = todo.text;
   return span;
 };
-const getTodoEditBtn = function () {
+const getTodoEditBtn = function (todo, editingTodoId) {
   const editBtn = document.createElement("button");
   editBtn.type = "button";
   editBtn.textContent = "✏️";
   editBtn.dataset.action = "edit";
   editBtn.classList.add("btn", "btn-icon", "btn-ghost");
+  if (todo.id === editingTodoId) editBtn.classList.add("invisible");
   return editBtn;
 };
 const getTodoDeleteBtn = function () {
@@ -79,14 +86,32 @@ const getTodoDeleteBtn = function () {
   return deleteBtn;
 };
 
+const getStatusDiv = function (todo) {
+  const statusDiv = document.createElement("div");
+
+  const dueDate = getYYYYMMDDDateString(todo.dueDate);
+  const currentDate = getYYYYMMDDDateString(new Date());
+
+  const text = isTodoCompleted(todo)
+    ? "Completed"
+    : isTodoActive(todo)
+      ? "Active"
+      : "Overdue";
+
+  statusDiv.textContent = text;
+
+  const cssClass = `status-${text.toLowerCase()}`;
+  statusDiv.classList.add(cssClass);
+
+  return statusDiv;
+};
+
 const getTodoActionDiv = function (todo, editingTodoId) {
   const actionDiv = document.createElement("div");
   actionDiv.classList.add("todo-actions");
 
-  if (todo.id !== editingTodoId) {
-    const editBtn = getTodoEditBtn();
-    actionDiv.appendChild(editBtn);
-  }
+  const editBtn = getTodoEditBtn(todo, editingTodoId);
+  actionDiv.appendChild(editBtn);
 
   const deleteBtn = getTodoDeleteBtn();
   actionDiv.appendChild(deleteBtn);
@@ -122,6 +147,8 @@ const setUpAddTodoEvent = function (state, render) {
       if (!todo) return;
 
       todo.text = state.todo.ui.draft.text.trim();
+      todo.dueDate = state.todo.ui.draft.dueDate;
+      todo.priority = state.todo.ui.draft.priority;
       todo.updatedAt = Date.now();
     } else {
       const todo = {
@@ -279,10 +306,13 @@ export const setupTodoEvents = (state, render) => {
 export const filterTodoList = function (state) {
   switch (state.todo.ui.filterBy) {
     case "active": {
-      return state.todo.data.filter((t) => !t.isCompleted);
+      return state.todo.data.filter((t) => isTodoActive(t));
     }
-    case "done": {
-      return state.todo.data.filter((t) => t.isCompleted);
+    case "completed": {
+      return state.todo.data.filter((t) => isTodoCompleted(t));
+    }
+    case "overdue": {
+      return state.todo.data.filter((t) => isTodoOverdue(t));
     }
 
     default:
@@ -312,6 +342,9 @@ export const renderTodoList = (todoList, editingTodoId) => {
     if (todo.id === editingTodoId) {
       todoDiv.classList.add("active");
     }
+
+    const todoStatusDiv = getStatusDiv(todo);
+    todoDiv.appendChild(todoStatusDiv);
 
     const todoActionDiv = getTodoActionDiv(todo, editingTodoId);
     todoDiv.appendChild(todoActionDiv);

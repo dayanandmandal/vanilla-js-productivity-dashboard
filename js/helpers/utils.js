@@ -23,6 +23,10 @@ export const getFullDateString = function (date) {
   }).format(d);
 };
 
+export const getYYYYMMDDDateString = function (date) {
+  return new Date(date).toISOString().split("T")[0];
+};
+
 export const loadString = function (key, fallback) {
   return localStorage.getItem(key) || fallback;
 };
@@ -35,4 +39,18 @@ export const loadNumber = function (key, fallback) {
 export const loadJSON = function (key, fallback) {
   const rawValue = localStorage.getItem(key);
   return rawValue ? JSON.parse(rawValue) : fallback;
+};
+
+export const isTodoActive = function (todo) {
+  const todayDate = getYYYYMMDDDateString(new Date());
+  return getYYYYMMDDDateString(todo.dueDate) <= todayDate && !todo.isCompleted;
+};
+
+export const isTodoCompleted = function (todo) {
+  return todo.isCompleted;
+};
+
+export const isTodoOverdue = function (todo) {
+  const todayDate = getYYYYMMDDDateString(new Date());
+  return getYYYYMMDDDateString(todo.dueDate) > todayDate && !todo.isCompleted;
 };

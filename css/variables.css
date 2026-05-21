@@ -3,7 +3,7 @@
    ========================================================= */
 
 :root {
-   /* check glassmorphism-lite surfaces later*/
+  /* check glassmorphism-lite surfaces later*/
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);
   /* =======================================================
@@ -125,18 +125,34 @@
   --info-border: #93c5fd;
 
   /* =======================================================
-     🟢 PRIORITY
-     ======================================================= */
+   🟢 PRIORITY
+   Works for both light & dark themes
+   ======================================================= */
 
-  --priority-high-bg: #fee2e2;
-  --priority-high-text: #991b1b;
+  --priority-high-bg: rgba(239, 68, 68, 0.14);
+  --priority-high-text: #dc2626;
 
-  --priority-medium-bg: #fef3c7;
-  --priority-medium-text: #92400e;
+  --priority-medium-bg: rgba(245, 158, 11, 0.14);
+  --priority-medium-text: #d97706;
 
-  --priority-low-bg: #dcfce7;
-  --priority-low-text: #166534;
+  --priority-low-bg: rgba(34, 197, 94, 0.14);
+  --priority-low-text: #16a34a;
 
+  /* =======================================================
+   📌 TASK STATUS
+   ======================================================= */
+
+  /* Active */
+  --status-active-bg: rgba(59, 130, 246, 0.16);
+  --status-active-text: #93c5fd;
+
+  /* Completed */
+  --status-completed-bg: rgba(34, 197, 94, 0.16);
+  --status-completed-text: #86efac;
+
+  /* Overdue */
+  --status-overdue-bg: rgba(239, 68, 68, 0.16);
+  --status-overdue-text: #fca5a5;
   /* =======================================================
      🔤 TYPOGRAPHY
      ======================================================= */
@@ -339,19 +355,6 @@ body.dark {
   --info-bg: rgba(37, 99, 235, 0.18);
   --info-text: #dbeafe;
   --info-border: rgba(96, 165, 250, 0.35);
-
-  /* =======================================================
-     🟢 PRIORITY
-     ======================================================= */
-
-  --priority-high-bg: rgba(239, 68, 68, 0.18);
-  --priority-high-text: #fecaca;
-
-  --priority-medium-bg: rgba(245, 158, 11, 0.18);
-  --priority-medium-text: #fde68a;
-
-  --priority-low-bg: rgba(34, 197, 94, 0.18);
-  --priority-low-text: #bbf7d0;
 
   /* =======================================================
      🌫️ SHADOWS

@@ -297,3 +297,30 @@ body .main {
 .priority-low {
   color: var(--priority-low-text);
 }
+
+.status-active {
+  background: var(--status-active-bg);
+  color: var(--status-active-text);
+}
+
+.status-completed {
+  background: var(--status-completed-bg);
+  color: var(--status-completed-text);
+}
+
+.status-overdue {
+  background: var(--status-overdue-bg);
+  color: var(--status-overdue-text);
+}
+
+.status-active,
+.status-completed,
+.status-overdue {
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.invisible {
+  visibility: hidden;
+}
