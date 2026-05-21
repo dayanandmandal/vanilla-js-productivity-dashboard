@@ -47,11 +47,27 @@
       <section class="page-section" data-section="todo">
         <h2>Todo</h2>
         <form class="todo-form">
-          <input type="text" name="todo-input" class="input" required />
-          <button type="submit" class="btn btn-primary add-todo">Add</button>
-          <button type="reset" class="btn btn-secondary cancel-todo">
-            Cancel
+          <input
+            type="text"
+            name="todo-input"
+            placeholder="What needs to be done ?"
+            class="input"
+            required
+          />
+          <input
+            type="date"
+            name="todo-date"
+            class="input"
+            placeholder="Due Date"
+            required
+          />
+          <span class="select-wrap">
+            <select class="input" name="todo-priority" required></select>
+          </span>
+          <button type="submit" class="btn btn-primary" name="add-todo">
+            Add
           </button>
+          <button type="reset" class="btn btn-secondary">Cancel</button>
         </form>
         <section>
           <div class="tab-wrap" id="todo-filters">
@@ -59,25 +75,7 @@
             <div class="tab" tabindex="0" data-filter="active">Active</div>
             <div class="tab" tabindex="0" data-filter="done">Done</div>
           </div>
-          <div class="todo-list">
-            <div class="todo" data-id="1">
-              <input type="checkbox" class="checkbox" />
-
-              <div class="todo-content">
-                <span class="todo-text"> Finish dashboard UI </span>
-
-                <p class="todo-time">Created at 20 May</p>
-              </div>
-
-              <div class="todo-actions">
-                <button type="button" class="btn btn-icon btn-ghost">✏️</button>
-
-                <button type="button" class="btn btn-icon btn-ghost danger">
-                  🗑️
-                </button>
-              </div>
-            </div>
-          </div>
+          <div class="todo-list"></div>
           <div class="todo-footer">
             <div class="remaining-todo-count"></div>
             <button class="btn clear-completed">Clear Completed</button>
@@ -92,7 +90,9 @@
                 <h2>
                   Notes
                   <span class="notes-toolbar">
-                    <button class="btn btn-ghost btn-icon" data-action="sort">⇅</button>
+                    <button class="btn btn-ghost btn-icon" data-action="sort">
+                      ⇅
+                    </button>
                   </span>
                 </h2>
                 <p>Organize your thoughts and tasks</p>

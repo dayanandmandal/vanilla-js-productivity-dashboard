@@ -5,6 +5,7 @@ import {
   renderRemainingTodoCount,
   renderTodoFiltersTab,
   renderTodoFormFromDraft,
+  renderTodoPriorityOptions,
 } from "./modules/todo.js";
 import {
   renderNotesFormFromDraft,
@@ -83,6 +84,7 @@ const renderApp = function () {
 };
 
 const renderTodoScreen = function () {
+  renderTodoPriorityOptions();
   renderTodoFiltersTab(state);
   renderTodoList(filterTodoList(state), state.todo.ui.editingId);
   renderTodoFormFromDraft(state);

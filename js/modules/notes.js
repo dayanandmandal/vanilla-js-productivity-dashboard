@@ -1,4 +1,4 @@
-import { getTimestamps } from "../helpers/utils.js";
+import { getUpdatedCreatedAtTimestamp } from "../helpers/utils.js";
 import { STORAGE_KEYS } from "../helpers/constants.js";
 
 const persistNotesState = function (state) {
@@ -192,7 +192,10 @@ const getCardDiv = function (note) {
   descP.classList.add("desc");
 
   const timestampsP = document.createElement("p");
-  timestampsP.textContent = getTimestamps(note.createdAt, note.updatedAt);
+  timestampsP.textContent = getUpdatedCreatedAtTimestamp(
+    note.createdAt,
+    note.updatedAt,
+  );
   timestampsP.classList.add("notes-time");
 
   const editButton = document.createElement("button");

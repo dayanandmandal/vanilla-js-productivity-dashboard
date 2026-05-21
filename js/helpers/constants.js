@@ -12,3 +12,20 @@ export const STORAGE_KEYS = {
   NOTES_SORT: "notesSortDirection",
   NOTES_EDITING_ID: "notesEditingId",
 };
+
+export const TODO_PRIORITY = {
+  HIGH: {
+    value: "HIGH",
+    label: "High",
+  },
+
+  MEDIUM: {
+    value: "MEDIUM",
+    label: "Medium",
+  },
+
+  LOW: {
+    value: "LOW",
+    label: "Low",
+  },
+};

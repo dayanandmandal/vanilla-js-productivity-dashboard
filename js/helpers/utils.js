@@ -1,4 +1,4 @@
-export const getTimestamps = function (createdAt, updatedAt) {
+export const getUpdatedCreatedAtTimestamp = function (createdAt, updatedAt) {
   const currentTimestamp = new Date();
   const timestamps = new Date(updatedAt);
 
@@ -11,6 +11,16 @@ export const getTimestamps = function (createdAt, updatedAt) {
       : "";
 
   return `${textStart} ${date} ${month} ${year}`;
+};
+
+export const getFullDateString = function (date) {
+  const d = new Date(date);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(d);
 };
 
 export const loadString = function (key, fallback) {

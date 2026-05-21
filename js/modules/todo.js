@@ -1,5 +1,5 @@
-import { getTimestamps } from "../helpers/utils.js";
-import { STORAGE_KEYS } from "../helpers/constants.js";
+import { getFullDateString } from "../helpers/utils.js";
+import { STORAGE_KEYS, TODO_PRIORITY } from "../helpers/constants.js";
 
 const persistTodoState = function (state) {
   localStorage.setItem(STORAGE_KEYS.TODO_LIST, JSON.stringify(state.todo.data));
@@ -29,6 +29,8 @@ const getTodoById = function (todoList, id) {
 const clearEditingState = function (state) {
   state.todo.ui.editingId = null;
   state.todo.ui.draft.text = "";
+  state.todo.ui.draft.dueDate = "";
+  state.todo.ui.draft.priority = "";
 };
 
 const getTodoCheckbox = function (todo) {
@@ -37,6 +39,22 @@ const getTodoCheckbox = function (todo) {
   checkbox.checked = todo.isCompleted;
   checkbox.dataset.action = "complete";
   return checkbox;
+};
+const geTodoContent = function (todo) {
+  const todoContentInnerHTML = `
+    <span class="todo-text">${todo.text}</span>
+    <span class="todo-meta">
+      <p class="todo-time">${getFullDateString(todo.dueDate)}</p>
+      <p class="priority-${todo.priority.toLowerCase()}">
+        ${TODO_PRIORITY[todo.priority].label}
+      </p>
+    </span>`;
+
+  const todoContent = document.createElement("div");
+  todoContent.classList.add("todo-content");
+
+  todoContent.innerHTML = todoContentInnerHTML;
+  return todoContent;
 };
 const getTodoSpan = function (todo) {
   const span = document.createElement("span");
@@ -59,13 +77,6 @@ const getTodoDeleteBtn = function () {
   deleteBtn.dataset.action = "delete";
   deleteBtn.classList.add("btn", "btn-icon", "btn-ghost", "danger");
   return deleteBtn;
-};
-
-const getTodotimestampsP = function (todo) {
-  const timestampsP = document.createElement("p");
-  timestampsP.textContent = getTimestamps(todo.createdAt, todo.updatedAt);
-  timestampsP.classList.add("todo-time");
-  return timestampsP;
 };
 
 const getTodoActionDiv = function (todo, editingTodoId) {
@@ -92,6 +103,14 @@ const setUpAddTodoEvent = function (state, render) {
         state.todo.ui.draft.text = input.value;
         persistTodoState(state);
         break;
+      case "todo-date":
+        state.todo.ui.draft.dueDate = input.value;
+        persistTodoState(state);
+        break;
+      case "todo-priority":
+        state.todo.ui.draft.priority = input.value;
+        persistTodoState(state);
+        break;
     }
   };
 
@@ -108,6 +127,8 @@ const setUpAddTodoEvent = function (state, render) {
       const todo = {
         id: Date.now(),
         text: state.todo.ui.draft.text.trim(),
+        dueDate: state.todo.ui.draft.dueDate,
+        priority: state.todo.ui.draft.priority,
         isCompleted: false,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -144,6 +165,8 @@ const setUpTodoActionsEvent = function (state, render) {
 
     state.todo.ui.editingId = todoId;
     state.todo.ui.draft.text = todo.text;
+    state.todo.ui.draft.dueDate = todo.dueDate;
+    state.todo.ui.draft.priority = todo.priority;
   };
 
   const deleteTodo = function (state, todoId) {
@@ -282,14 +305,7 @@ export const renderTodoList = (todoList, editingTodoId) => {
     checkbox.classList.add("checkbox");
     todoDiv.appendChild(checkbox);
 
-    const todoContent = document.createElement("div");
-    todoContent.classList.add("todo-content");
-
-    const span = getTodoSpan(todo);
-    todoContent.appendChild(span);
-
-    const timestampsP = getTodotimestampsP(todo);
-    todoContent.appendChild(timestampsP);
+    const todoContent = geTodoContent(todo);
 
     todoDiv.appendChild(todoContent);
 
@@ -335,10 +351,35 @@ export const renderTodoFormFromDraft = function (state) {
   const todoForm = document.querySelector(".todo-form");
   if (!todoForm) return;
 
-  const submitBtn = todoForm.querySelector(".add-todo");
+  const submitBtn = todoForm.querySelector('[name="add-todo"]');
   if (!submitBtn) return;
 
   todoForm.elements["todo-input"].value = state.todo.ui.draft.text;
+  todoForm.elements["todo-date"].value = state.todo.ui.draft.dueDate;
+  todoForm.elements["todo-priority"].value = state.todo.ui.draft.priority;
   todoForm.dataset.mode = state.todo.ui.editingId ? "edit" : "create";
   submitBtn.textContent = state.todo.ui.editingId ? "Update" : "Add";
+};
+
+export const renderTodoPriorityOptions = function (state) {
+  const todoForm = document.querySelector(".todo-form");
+  if (!todoForm) return;
+
+  const select = todoForm.querySelector('[name="todo-priority"]');
+
+  const selectedOption = `
+      <option value="" selected disabled>
+        Select priority
+      </option>
+    `;
+
+  const optionsHTML = Object.values(TODO_PRIORITY).map(
+    (priority) => `
+      <option value="${priority.value}">
+        ${priority.label}
+      </option>
+    `,
+  );
+
+  select.innerHTML = selectedOption + optionsHTML.join("");
 };

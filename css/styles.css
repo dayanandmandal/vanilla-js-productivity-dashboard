@@ -101,7 +101,7 @@ body .main {
 
   gap: var(--space-xs);
 
-  padding: 10px 16px;
+  padding: var(--space-sm) var(--space-md);
 
   border-radius: var(--radius-md);
   border: var(--border-width) solid transparent;
@@ -183,7 +183,7 @@ body .main {
 .input {
   width: 100%;
 
-  padding: 10px 14px;
+  padding: var(--space-sm) var(--space-md);
 
   border-radius: var(--radius-md);
 
@@ -212,6 +212,36 @@ body .main {
   border-color: var(--input-border-focus);
 
   box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.12);
+}
+
+/* select */
+.select-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 30px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap::after {
+  content: "⌄";
+
+  position: absolute;
+
+  right: 14px;
+  top: 50%;
+
+  transform: translateY(-57%);
+
+  pointer-events: none;
+
+  font-size: var(--font-size-sm);
+
+  color: var(--app-text-muted);
 }
 
 /* checkbox */
@@ -254,4 +284,16 @@ body .main {
   background: var(--tab-bg-active);
   color: var(--tab-text-active);
   /* border-bottom: 2px solid var(--tab-border-active); */
+}
+
+.priority-high {
+  color: var(--priority-high-text);
+}
+
+.priority-medium {
+  color: var(--priority-medium-text);
+}
+
+.priority-low {
+  color: var(--priority-low-text);
 }
