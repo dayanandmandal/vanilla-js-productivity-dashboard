@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   TODO_DRAFT: "todoDraftText",
   TODO_EDITING_ID: "editingTodoId",
   TODO_SELECTED_IDS: "selectedIds",
+  TODO_SEARCH_TEXT: "todoSearchText",
 
   NOTES_LIST: "notesList",
   NOTES_DRAFT: "notesDraft",
@@ -35,6 +36,11 @@ export const EMPTY_STATE = {
   blank: {
     title: "No todos yet",
     desc: "Notes you add appear here.",
+  },
+
+  search: {
+    title: "No matching tasks",
+    desc: "Try a different keyword or clear search.",
   },
 
   active: {

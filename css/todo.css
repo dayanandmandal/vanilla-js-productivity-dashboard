@@ -199,11 +199,18 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 300px;
+  min-height: 200px;
 
   opacity: 0.7;
 }
 
 .no-todos * {
   text-align: center;
+}
+
+.todo-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  column-gap: var(--space-xl);
 }

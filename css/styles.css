@@ -180,6 +180,30 @@ body .main {
   color: var(--danger-text);
 }
 
+.search-wrap {
+  position: relative;
+  flex: 1 1 fit-content;
+  max-width: 600px;
+}
+
+.search-wrap .input {
+  padding-right: calc(20px + var(--space-md));
+}
+
+.search-clear {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 25px;
+  height: 25px;
+  box-shadow: none;
+}
+
+.search-wrap:not(.has-value) .search-clear {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .toolbar-link {
   position: relative;
 

@@ -113,13 +113,31 @@
           </div>
         </div>
         <section>
-          <div class="tab-wrap" id="todo-filters">
-            <div class="tab" tabindex="0" data-filter="all">All</div>
-            <div class="tab" tabindex="0" data-filter="active">Active</div>
-            <div class="tab" tabindex="0" data-filter="completed">
-              Completed
+          <div class="todo-controls">
+            <div class="tab-wrap" id="todo-filters">
+              <div class="tab" tabindex="0" data-filter="all">All</div>
+              <div class="tab" tabindex="0" data-filter="active">Active</div>
+              <div class="tab" tabindex="0" data-filter="completed">
+                Completed
+              </div>
+              <div class="tab" tabindex="0" data-filter="overdue">Overdue</div>
             </div>
-            <div class="tab" tabindex="0" data-filter="overdue">Overdue</div>
+            <div class="search-wrap" data-role="todo-search">
+              <input
+                type="text"
+                class="input"
+                placeholder="Search"
+                data-action="todo-search-input"
+              />
+              <button
+                type="button"
+                class="search-clear btn btn-ghost btn-icon"
+                data-action="todo-clear-search"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            </div>
           </div>
           <div class="todo-list" data-role="todo-list"></div>
           <!-- place holder for now -->

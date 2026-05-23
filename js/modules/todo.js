@@ -18,6 +18,7 @@ const persistTodoState = function (state) {
     STORAGE_KEYS.TODO_DRAFT,
     JSON.stringify(state.todo.ui.draft),
   );
+  localStorage.setItem(STORAGE_KEYS.TODO_SEARCH_TEXT, state.todo.ui.searchText);
   if (state.todo.ui.editingId) {
     localStorage.setItem(STORAGE_KEYS.TODO_EDITING_ID, state.todo.ui.editingId);
   } else {
@@ -49,16 +50,26 @@ const clearEditingState = function (state) {
   state.todo.ui.draft.priority = "";
 };
 
-const getEmptyState = function (filterBy, hasTodos) {
-  const emptyState = hasTodos
-    ? (EMPTY_STATE[filterBy] ?? EMPTY_STATE.blank)
-    : EMPTY_STATE.blank;
+const getEmptyState = function (filterBy, hasTodos, searchText) {
+  const hasSearch = searchText.trim();
+
+  let emptyState = EMPTY_STATE.blank;
+
+  if (hasTodos && hasSearch) {
+    emptyState = EMPTY_STATE.search;
+  } else if (hasTodos) {
+    emptyState = EMPTY_STATE[filterBy] ?? EMPTY_STATE.blank;
+  }
 
   return `
     <div class="no-todos">
       <h4>${emptyState.title}</h4>
       <p>${emptyState.desc}</p>
     </div>`;
+};
+
+const clearSearchInput = function (state) {
+  state.todo.ui.searchText = "";
 };
 
 const areAllTodoSelected = function (state) {
@@ -442,27 +453,75 @@ const setUpTabChangeEvent = function (state, render) {
   if (todoFilters) todoFilters.addEventListener("click", handleTabChange);
 };
 
+const setUpSearchEvent = function (state, render) {
+  const handleSearchInput = function (event) {
+    state.todo.ui.searchText = event.target.value;
+
+    persistTodoState(state);
+
+    render();
+  };
+
+  const handleSearchClick = function (event) {
+    const actionEle = event.target.closest("[data-action]");
+    if (!actionEle) return;
+
+    switch (actionEle.dataset.action) {
+      case "todo-clear-search": {
+        clearSearchInput(state);
+        persistTodoState(state);
+        render();
+        break;
+      }
+    }
+
+    persistTodoState(state);
+
+    render();
+  };
+
+  const searchWrapEle = document.querySelector("[data-role='todo-search']");
+  if (!searchWrapEle) return;
+  searchWrapEle.addEventListener("click", handleSearchClick);
+
+  const searchInputEle = searchWrapEle.querySelector(
+    "[data-action='todo-search-input']",
+  );
+  if (!searchInputEle) return;
+  searchInputEle.addEventListener("input", handleSearchInput);
+};
+
 export const setupTodoEvents = (state, render) => {
   setUpAddTodoEvent(state, render);
   setUpTodoActionsEvent(state, render);
   setUpTabChangeEvent(state, render);
+  setUpSearchEvent(state, render);
 };
 
 export const filterTodoList = function (state) {
-  switch (state.todo.ui.filterBy) {
+  const { filterBy, searchText } = state.todo.ui;
+
+  let todos = [...state.todo.data];
+
+  switch (filterBy) {
     case "active": {
-      return state.todo.data.filter((t) => isTodoActive(t));
+      todos = todos.filter((t) => isTodoActive(t));
     }
     case "completed": {
-      return state.todo.data.filter((t) => isTodoCompleted(t));
+      todos = todos.filter((t) => isTodoCompleted(t));
     }
     case "overdue": {
-      return state.todo.data.filter((t) => isTodoOverdue(t));
+      todos = todos.filter((t) => isTodoOverdue(t));
     }
-
-    default:
-      return [...state.todo.data];
   }
+
+  if (searchText.trim()) {
+    todos = todos.filter((todo) =>
+      todo.text.toLowerCase().includes(searchText.toLowerCase()),
+    );
+  }
+
+  return todos;
 };
 
 export const renderTodoList = (
@@ -471,6 +530,7 @@ export const renderTodoList = (
   selectedIds,
   filterBy,
   hasTodos,
+  searchText,
 ) => {
   const todoListEle = document.querySelector("[data-role='todo-list']");
   if (!todoListEle) return;
@@ -478,7 +538,7 @@ export const renderTodoList = (
   todoListEle.innerHTML = "";
 
   if (!todoList.length) {
-    todoListEle.innerHTML = getEmptyState(filterBy, hasTodos);
+    todoListEle.innerHTML = getEmptyState(filterBy, hasTodos, searchText);
     return;
   }
 
@@ -582,4 +642,19 @@ export const renderTodoBulkEditing = function (state) {
   selectAllCheckbox.checked = areAllSelected;
 
   selectAllCheckbox.indeterminate = selectedIds.size > 0 && !areAllSelected;
+};
+
+export const renderTodoSearch = function (state) {
+  const { searchText } = state.todo.ui;
+
+  const searchWrapEle = document.querySelector("[data-role='todo-search']");
+  if (!searchWrapEle) return;
+
+  const searchInputEle = searchWrapEle.querySelector(
+    "[data-action='todo-search-input']",
+  );
+  if (!searchInputEle) return;
+
+  searchWrapEle.classList.toggle("has-value", searchText.trim());
+  searchInputEle.value = searchText;
 };

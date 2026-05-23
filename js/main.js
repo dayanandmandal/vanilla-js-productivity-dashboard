@@ -6,6 +6,7 @@ import {
   renderTodoFormFromDraft,
   renderTodoPriorityOptions,
   renderTodoBulkEditing,
+  renderTodoSearch,
 } from "./modules/todo.js";
 import {
   renderNotesFormFromDraft,
@@ -29,6 +30,7 @@ const state = {
       draft: loadJSON(STORAGE_KEYS.TODO_DRAFT, { text: "" }),
       filterBy: loadString(STORAGE_KEYS.TODO_FILTER, "all"),
       selectedIds: loadSet(STORAGE_KEYS.TODO_SELECTED_IDS, new Set()),
+      searchText: loadString(STORAGE_KEYS.TODO_SEARCH_TEXT, ""),
     },
   },
 
@@ -87,6 +89,7 @@ const renderApp = function () {
 const renderTodoScreen = function () {
   renderTodoPriorityOptions();
   renderTodoBulkEditing(state);
+  renderTodoSearch(state);
   renderTodoFiltersTab(state);
   renderTodoList(
     filterTodoList(state),
@@ -94,6 +97,7 @@ const renderTodoScreen = function () {
     state.todo.ui.selectedIds,
     state.todo.ui.filterBy,
     state.todo.data.length > 0,
+    state.todo.ui.searchText,
   );
   renderTodoFormFromDraft(state);
 };
