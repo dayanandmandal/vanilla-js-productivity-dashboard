@@ -33,7 +33,7 @@ const persistTodoState = function (state) {
 
 const getTodoIdFromEvent = function (event) {
   const todoDiv = event.target.closest(".todo");
-  if (!todoDiv) return {};
+  if (!todoDiv) return null;
 
   return +todoDiv.dataset.id;
 };
@@ -84,9 +84,14 @@ const toggleAll = function (state) {
 
 const markAsCompleted = function (state) {
   const selectedIds = state.todo.ui.selectedIds;
+  const todos = state.todo.data;
+
+  const todoIdMap = new Map();
+
+  todos.forEach((todo) => todoIdMap.set(todo.id, todo));
 
   selectedIds.forEach((todoId) => {
-    const todo = state.todo.data.find((todo) => todo.id === todoId);
+    const todo = todoIdMap.get(todoId);
     if (todo) todo.isCompleted = true;
     else console.error(`${todoId} not found`);
   });
@@ -96,10 +101,15 @@ const markAsCompleted = function (state) {
 
 const markAsIncompleted = function (state) {
   const selectedIds = state.todo.ui.selectedIds;
+  const todos = state.todo.data;
+
+  const todoIdMap = new Map();
+
+  todos.forEach((todo) => todoIdMap.set(todo.id, todo));
 
   selectedIds.forEach((todoId) => {
-    const todo = state.todo.data.find((todo) => todo.id === todoId);
-    if (todo) todo.isCompleted = false;
+    const todo = todoIdMap.get(todoId);
+    if (todo) todo.isCompleted = true;
     else console.error(`${todoId} not found`);
   });
 
@@ -177,9 +187,6 @@ const getTodoDeleteBtn = function () {
 
 const getStatusDiv = function (todo) {
   const statusDiv = document.createElement("div");
-
-  const dueDate = getYYYYMMDDDateString(todo.dueDate);
-  const currentDate = getYYYYMMDDDateString(new Date());
 
   const text = isTodoCompleted(todo)
     ? "Completed"
