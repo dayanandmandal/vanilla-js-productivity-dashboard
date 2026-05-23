@@ -2,10 +2,10 @@ import {
   renderTodoList,
   setupTodoEvents,
   filterTodoList,
-  renderRemainingTodoCount,
   renderTodoFiltersTab,
   renderTodoFormFromDraft,
   renderTodoPriorityOptions,
+  renderTodoBulkEditing,
 } from "./modules/todo.js";
 import {
   renderNotesFormFromDraft,
@@ -14,7 +14,7 @@ import {
   sortNotesList,
 } from "./modules/notes.js";
 import { STORAGE_KEYS } from "./helpers/constants.js";
-import { loadJSON, loadNumber, loadString } from "./helpers/utils.js";
+import { loadJSON, loadNumber, loadSet, loadString } from "./helpers/utils.js";
 
 const state = {
   app: {
@@ -28,6 +28,7 @@ const state = {
       editingId: loadNumber(STORAGE_KEYS.TODO_EDITING_ID, null),
       draft: loadJSON(STORAGE_KEYS.TODO_DRAFT, { text: "" }),
       filterBy: loadString(STORAGE_KEYS.TODO_FILTER, "all"),
+      selectedIds: loadSet(STORAGE_KEYS.TODO_SELECTED_IDS, new Set()),
     },
   },
 
@@ -85,10 +86,16 @@ const renderApp = function () {
 
 const renderTodoScreen = function () {
   renderTodoPriorityOptions();
+  renderTodoBulkEditing(state);
   renderTodoFiltersTab(state);
-  renderTodoList(filterTodoList(state), state.todo.ui.editingId);
+  renderTodoList(
+    filterTodoList(state),
+    state.todo.ui.editingId,
+    state.todo.ui.selectedIds,
+    state.todo.ui.filterBy,
+    state.todo.data.length > 0,
+  );
   renderTodoFormFromDraft(state);
-  renderRemainingTodoCount(state);
 };
 
 const renderNotesScreen = function () {

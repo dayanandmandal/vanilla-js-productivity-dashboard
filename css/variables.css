@@ -105,25 +105,29 @@
   --tab-border-active: #8b5cf6;
 
   /* =======================================================
-     🚦 STATUS
-     ======================================================= */
+   🌈 SEMANTIC COLORS
+   Balanced for both light & dark themes
+   ======================================================= */
 
-  --success-bg: #dcfce7;
-  --success-text: #166534;
-  --success-border: #86efac;
+  /* Success */
+  --success-bg: rgba(34, 197, 94, 0.14);
+  --success-text: #16a34a;
+  --success-border: rgba(34, 197, 94, 0.32);
 
-  --danger-bg: #fee2e2;
-  --danger-text: #991b1b;
-  --danger-border: #fca5a5;
+  /* Danger */
+  --danger-bg: rgba(239, 68, 68, 0.14);
+  --danger-text: #dc2626;
+  --danger-border: rgba(239, 68, 68, 0.32);
 
-  --warning-bg: #fef3c7;
-  --warning-text: #92400e;
-  --warning-border: #fcd34d;
+  /* Warning */
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --warning-text: #d97706;
+  --warning-border: rgba(245, 158, 11, 0.32);
 
-  --info-bg: #dbeafe;
-  --info-text: #1d4ed8;
-  --info-border: #93c5fd;
-
+  /* Info */
+  --info-bg: rgba(59, 130, 246, 0.14);
+  --info-text: #2563eb;
+  --info-border: rgba(59, 130, 246, 0.32);
   /* =======================================================
    🟢 PRIORITY
    Works for both light & dark themes
@@ -140,19 +144,20 @@
 
   /* =======================================================
    📌 TASK STATUS
+   Balanced for both light & dark themes
    ======================================================= */
 
   /* Active */
-  --status-active-bg: rgba(59, 130, 246, 0.16);
-  --status-active-text: #93c5fd;
+  --status-active-bg: rgba(59, 130, 246, 0.14);
+  --status-active-text: #2563eb;
 
   /* Completed */
-  --status-completed-bg: rgba(34, 197, 94, 0.16);
-  --status-completed-text: #86efac;
+  --status-completed-bg: rgba(34, 197, 94, 0.14);
+  --status-completed-text: #16a34a;
 
   /* Overdue */
-  --status-overdue-bg: rgba(239, 68, 68, 0.16);
-  --status-overdue-text: #fca5a5;
+  --status-overdue-bg: rgba(239, 68, 68, 0.14);
+  --status-overdue-text: #dc2626;
   /* =======================================================
      🔤 TYPOGRAPHY
      ======================================================= */
@@ -335,26 +340,6 @@ body.dark {
   --tab-text-active: #c4b5fd;
 
   --tab-border-active: #8b5cf6;
-
-  /* =======================================================
-     🚦 STATUS
-     ======================================================= */
-
-  --success-bg: rgba(22, 163, 74, 0.18);
-  --success-text: #dcfce7;
-  --success-border: rgba(34, 197, 94, 0.35);
-
-  --danger-bg: rgba(220, 38, 38, 0.18);
-  --danger-text: #fee2e2;
-  --danger-border: rgba(248, 113, 113, 0.35);
-
-  --warning-bg: rgba(217, 119, 6, 0.18);
-  --warning-text: #fef3c7;
-  --warning-border: rgba(251, 191, 36, 0.35);
-
-  --info-bg: rgba(37, 99, 235, 0.18);
-  --info-text: #dbeafe;
-  --info-border: rgba(96, 165, 250, 0.35);
 
   /* =======================================================
      🌫️ SHADOWS

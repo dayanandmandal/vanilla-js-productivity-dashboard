@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   TODO_FILTER: "todoListFilterBy",
   TODO_DRAFT: "todoDraftText",
   TODO_EDITING_ID: "editingTodoId",
+  TODO_SELECTED_IDS: "selectedIds",
 
   NOTES_LIST: "notesList",
   NOTES_DRAFT: "notesDraft",
@@ -27,5 +28,27 @@ export const TODO_PRIORITY = {
   LOW: {
     value: "LOW",
     label: "Low",
+  },
+};
+
+export const EMPTY_STATE = {
+  blank: {
+    title: "No todos yet",
+    desc: "Notes you add appear here.",
+  },
+
+  active: {
+    title: "No active tasks",
+    desc: "Everything is completed 🎉",
+  },
+
+  completed: {
+    title: "No completed tasks",
+    desc: "Completed todos will appear here.",
+  },
+
+  overdue: {
+    title: "No overdue tasks",
+    desc: "You're all caught up 🚀",
   },
 };

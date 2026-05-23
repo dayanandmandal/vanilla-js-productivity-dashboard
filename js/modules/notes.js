@@ -1,5 +1,6 @@
 import { getUpdatedCreatedAtTimestamp } from "../helpers/utils.js";
 import { STORAGE_KEYS } from "../helpers/constants.js";
+import { setUpBulkActionsEvent } from "./todo.js";
 
 const persistNotesState = function (state) {
   localStorage.setItem(
@@ -178,6 +179,7 @@ const setUpToolbarEvent = function (state, render) {
 
 export const setUpNotesEvent = function (state, render) {
   setUpFormActionEvents(state, render);
+  setUpBulkActionsEvent(state, render);
   setUpNotesActionEvents(state, render);
   setUpToolbarEvent(state, render);
 };
@@ -214,7 +216,7 @@ const getCardDiv = function (note) {
   actionDiv.appendChild(deleteButton);
 
   const cardDiv = document.createElement("div");
-  cardDiv.classList.add("card");
+  cardDiv.classList.add("card", "notes-card");
   cardDiv.dataset.id = note.id;
 
   cardDiv.appendChild(titleH4);

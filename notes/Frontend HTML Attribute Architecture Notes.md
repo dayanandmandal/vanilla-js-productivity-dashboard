@@ -9,6 +9,7 @@ Use `class` ONLY for:
 - styling
 - layout
 - visual appearance
+- **temporary UI states**
 
 GOOD:
 

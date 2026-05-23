@@ -5,7 +5,11 @@ import {
   isTodoCompleted,
   isTodoOverdue,
 } from "../helpers/utils.js";
-import { STORAGE_KEYS, TODO_PRIORITY } from "../helpers/constants.js";
+import {
+  EMPTY_STATE,
+  STORAGE_KEYS,
+  TODO_PRIORITY,
+} from "../helpers/constants.js";
 
 const persistTodoState = function (state) {
   localStorage.setItem(STORAGE_KEYS.TODO_LIST, JSON.stringify(state.todo.data));
@@ -18,6 +22,12 @@ const persistTodoState = function (state) {
     localStorage.setItem(STORAGE_KEYS.TODO_EDITING_ID, state.todo.ui.editingId);
   } else {
     localStorage.removeItem(STORAGE_KEYS.TODO_EDITING_ID);
+  }
+  if (state.todo.ui.selectedIds.size) {
+    const selectedIdsStr = JSON.stringify([...state.todo.ui.selectedIds]);
+    localStorage.setItem(STORAGE_KEYS.TODO_SELECTED_IDS, selectedIdsStr);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.TODO_SELECTED_IDS);
   }
 };
 
@@ -39,11 +49,82 @@ const clearEditingState = function (state) {
   state.todo.ui.draft.priority = "";
 };
 
-const getTodoCheckbox = function (todo) {
+const getEmptyState = function (filterBy, hasTodos) {
+  const emptyState = hasTodos
+    ? (EMPTY_STATE[filterBy] ?? EMPTY_STATE.blank)
+    : EMPTY_STATE.blank;
+
+  return `
+    <div class="no-todos">
+      <h4>${emptyState.title}</h4>
+      <p>${emptyState.desc}</p>
+    </div>`;
+};
+
+const areAllTodoSelected = function (state) {
+  const { selectedIds } = state.todo.ui;
+  const todos = state.todo.data;
+
+  return todos.every((todo) => selectedIds.has(todo.id));
+};
+
+const toggleAll = function (state) {
+  const { selectedIds } = state.todo.ui;
+  const todos = state.todo.data;
+
+  const areAllSelected = areAllTodoSelected(state);
+
+  if (areAllSelected) {
+    selectedIds.clear();
+    return;
+  }
+
+  todos.forEach((todo) => selectedIds.add(todo.id));
+};
+
+const markAsCompleted = function (state) {
+  const selectedIds = state.todo.ui.selectedIds;
+
+  selectedIds.forEach((todoId) => {
+    const todo = state.todo.data.find((todo) => todo.id === todoId);
+    if (todo) todo.isCompleted = true;
+    else console.error(`${todoId} not found`);
+  });
+
+  selectedIds.clear();
+};
+
+const markAsIncompleted = function (state) {
+  const selectedIds = state.todo.ui.selectedIds;
+
+  selectedIds.forEach((todoId) => {
+    const todo = state.todo.data.find((todo) => todo.id === todoId);
+    if (todo) todo.isCompleted = false;
+    else console.error(`${todoId} not found`);
+  });
+
+  selectedIds.clear();
+};
+
+const deleteSelected = function (state) {
+  const selectedIds = state.todo.ui.selectedIds;
+
+  state.todo.data = state.todo.data.filter((todo) => !selectedIds.has(todo.id));
+
+  if (selectedIds.has(state.todo.ui.editingId)) {
+    clearEditingState(state);
+  }
+
+  selectedIds.clear();
+};
+
+const getTodoCheckbox = function (todo, selectedIds) {
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.checked = todo.isCompleted;
-  checkbox.dataset.action = "complete";
+  checkbox.checked = selectedIds.has(todo.id);
+  checkbox.dataset.action = "bulk-select";
+  checkbox.classList.add("checkbox", "is-invisible");
+
   return checkbox;
 };
 const geTodoContent = function (todo) {
@@ -68,13 +149,21 @@ const getTodoSpan = function (todo) {
   span.textContent = todo.text;
   return span;
 };
+const getTodoCompleteBtn = function (todo) {
+  const completeBtn = document.createElement("button");
+  completeBtn.type = "button";
+  completeBtn.textContent = todo.isCompleted ? "✔" : "◯";
+  completeBtn.dataset.action = "complete";
+  completeBtn.classList.add("btn", "btn-icon", "btn-ghost");
+  return completeBtn;
+};
 const getTodoEditBtn = function (todo, editingTodoId) {
   const editBtn = document.createElement("button");
   editBtn.type = "button";
   editBtn.textContent = "✏️";
   editBtn.dataset.action = "edit";
   editBtn.classList.add("btn", "btn-icon", "btn-ghost");
-  if (todo.id === editingTodoId) editBtn.classList.add("invisible");
+  if (todo.id === editingTodoId) editBtn.classList.add("is-invisible");
   return editBtn;
 };
 const getTodoDeleteBtn = function () {
@@ -109,6 +198,9 @@ const getStatusDiv = function (todo) {
 const getTodoActionDiv = function (todo, editingTodoId) {
   const actionDiv = document.createElement("div");
   actionDiv.classList.add("todo-actions");
+
+  const completeBtn = getTodoCompleteBtn(todo);
+  actionDiv.appendChild(completeBtn);
 
   const editBtn = getTodoEditBtn(todo, editingTodoId);
   actionDiv.appendChild(editBtn);
@@ -198,6 +290,7 @@ const setUpTodoActionsEvent = function (state, render) {
 
   const deleteTodo = function (state, todoId) {
     state.todo.data = state.todo.data.filter((t) => t.id !== todoId);
+    state.todo.ui.selectedIds.delete(todoId);
 
     if (state.todo.ui.editingId === todoId) {
       clearEditingState(state);
@@ -216,6 +309,14 @@ const setUpTodoActionsEvent = function (state, render) {
     if (!button) return;
 
     switch (button.dataset.action) {
+      case "complete": {
+        const todoId = getTodoIdFromEvent(event);
+        completeTodo(state, todoId);
+        persistTodoState(state);
+        render();
+        break;
+      }
+
       case "edit": {
         const todoId = getTodoIdFromEvent(event);
         enableEditTodo(state, todoId);
@@ -234,14 +335,58 @@ const setUpTodoActionsEvent = function (state, render) {
     }
   };
 
+  const selectUnselectTodo = function (state, todoId) {
+    const selectedIds = state.todo.ui.selectedIds;
+
+    selectedIds.has(todoId)
+      ? selectedIds.delete(todoId)
+      : selectedIds.add(todoId);
+  };
+
   const handleTodoChange = function (event) {
     const input = event.target.closest("input");
     if (!input) return;
 
     switch (input.dataset.action) {
-      case "complete": {
+      case "bulk-select": {
         const todoId = getTodoIdFromEvent(event);
-        completeTodo(state, todoId);
+        selectUnselectTodo(state, todoId);
+        persistTodoState(state);
+        render();
+      }
+    }
+  };
+
+  const todoListDiv = document.querySelector("[data-role='todo-list']");
+
+  if (todoListDiv) {
+    todoListDiv.addEventListener("click", handleTodoClick);
+    todoListDiv.addEventListener("change", handleTodoChange);
+  }
+};
+
+export const setUpBulkActionsEvent = function (state, render) {
+  const handleBulkActions = function (event) {
+    const btnEle = event.target.closest("button");
+    if (!btnEle) return;
+
+    switch (btnEle.dataset.action) {
+      case "bulk-complete": {
+        markAsCompleted(state);
+        persistTodoState(state);
+        render();
+        break;
+      }
+
+      case "bulk-incomplete": {
+        markAsIncompleted(state);
+        persistTodoState(state);
+        render();
+        break;
+      }
+
+      case "bulk-delete": {
+        deleteSelected(state);
         persistTodoState(state);
         render();
         break;
@@ -249,12 +394,25 @@ const setUpTodoActionsEvent = function (state, render) {
     }
   };
 
-  const todoListDiv = document.querySelector(".todo-list");
+  const handleBulkChange = function (event) {
+    const inputEle = event.target.closest("input");
+    if (!inputEle) return;
 
-  if (todoListDiv) {
-    todoListDiv.addEventListener("click", handleTodoClick);
-    todoListDiv.addEventListener("change", handleTodoChange);
-  }
+    switch (inputEle.dataset.action) {
+      case "bulk-toggle-all": {
+        toggleAll(state);
+        persistTodoState(state);
+        render();
+        break;
+      }
+    }
+  };
+
+  const bulkTodoEle = document.querySelector("[data-role='bulk-actions'");
+  if (!bulkTodoEle) return;
+
+  bulkTodoEle.addEventListener("click", handleBulkActions);
+  bulkTodoEle.addEventListener("change", handleBulkChange);
 };
 
 const setUpTabChangeEvent = function (state, render) {
@@ -277,30 +435,10 @@ const setUpTabChangeEvent = function (state, render) {
   if (todoFilters) todoFilters.addEventListener("click", handleTabChange);
 };
 
-const setUpClearCompletedEvent = function (state, render) {
-  const handleClearCompleted = function () {
-    state.todo.data = state.todo.data.filter((t) => !t.isCompleted);
-
-    const todo = getTodoById(state.todo.data, state.todo.ui.editingId);
-    if (!todo) {
-      clearEditingState(state);
-    }
-
-    persistTodoState(state);
-    render();
-  };
-
-  const clearCompletedBtn = document.querySelector(".clear-completed");
-  if (!clearCompletedBtn) return;
-
-  clearCompletedBtn.addEventListener("click", handleClearCompleted);
-};
-
 export const setupTodoEvents = (state, render) => {
   setUpAddTodoEvent(state, render);
   setUpTodoActionsEvent(state, render);
   setUpTabChangeEvent(state, render);
-  setUpClearCompletedEvent(state, render);
 };
 
 export const filterTodoList = function (state) {
@@ -320,19 +458,29 @@ export const filterTodoList = function (state) {
   }
 };
 
-export const renderTodoList = (todoList, editingTodoId) => {
-  const todoListEle = document.querySelector(".todo-list");
+export const renderTodoList = (
+  todoList,
+  editingTodoId,
+  selectedIds,
+  filterBy,
+  hasTodos,
+) => {
+  const todoListEle = document.querySelector("[data-role='todo-list']");
   if (!todoListEle) return;
 
   todoListEle.innerHTML = "";
+
+  if (!todoList.length) {
+    todoListEle.innerHTML = getEmptyState(filterBy, hasTodos);
+    return;
+  }
 
   for (let todo of todoList) {
     const todoDiv = document.createElement("div");
     todoDiv.classList.add("todo");
     todoDiv.dataset.id = todo.id;
 
-    const checkbox = getTodoCheckbox(todo);
-    checkbox.classList.add("checkbox");
+    const checkbox = getTodoCheckbox(todo, selectedIds);
     todoDiv.appendChild(checkbox);
 
     const todoContent = geTodoContent(todo);
@@ -352,22 +500,6 @@ export const renderTodoList = (todoList, editingTodoId) => {
     if (todo.isCompleted) todoDiv.classList.add("completed");
     todoListEle.appendChild(todoDiv);
   }
-};
-
-export const renderRemainingTodoCount = function (state) {
-  const remainingTodoDiv = document.querySelector(".remaining-todo-count");
-  if (!remainingTodoDiv) return;
-
-  const remainingTaskCount = state.todo.data.reduce((count, t) => {
-    return t.isCompleted ? count : count + 1;
-  }, 0);
-
-  const text =
-    remainingTaskCount === 0
-      ? `No task pending.`
-      : `${remainingTaskCount} task${remainingTaskCount > 1 ? "s" : ""} remaining.`;
-
-  remainingTodoDiv.textContent = text;
 };
 
 export const renderTodoFiltersTab = function (state) {
@@ -415,4 +547,32 @@ export const renderTodoPriorityOptions = function (state) {
   );
 
   select.innerHTML = selectedOption + optionsHTML.join("");
+};
+
+export const renderTodoBulkEditing = function (state) {
+  const todoSection = document.querySelector(
+    ".page-section[data-section='todo']",
+  );
+  if (!todoSection) return;
+
+  const bulkActionCountEle = document.querySelector(
+    "[data-role='selected-count']",
+  );
+  if (!bulkActionCountEle) return;
+
+  const selectedIds = state.todo.ui.selectedIds;
+
+  todoSection.classList.toggle("is-selecting", selectedIds.size > 0);
+  bulkActionCountEle.textContent = `${selectedIds.size} Selected`;
+
+  const selectAllCheckbox = todoSection.querySelector(
+    "[data-action='bulk-toggle-all']",
+  );
+  if (!selectAllCheckbox) return;
+
+  const areAllSelected = areAllTodoSelected(state);
+
+  selectAllCheckbox.checked = areAllSelected;
+
+  selectAllCheckbox.indeterminate = selectedIds.size > 0 && !areAllSelected;
 };

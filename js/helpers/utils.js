@@ -41,9 +41,15 @@ export const loadJSON = function (key, fallback) {
   return rawValue ? JSON.parse(rawValue) : fallback;
 };
 
+export const loadSet = function (key, fallback) {
+  const saved = JSON.parse(localStorage.getItem(key) || "[]");
+
+  return saved.length ? new Set(saved) : fallback;
+};
+
 export const isTodoActive = function (todo) {
   const todayDate = getYYYYMMDDDateString(new Date());
-  return getYYYYMMDDDateString(todo.dueDate) <= todayDate && !todo.isCompleted;
+  return getYYYYMMDDDateString(todo.dueDate) >= todayDate && !todo.isCompleted;
 };
 
 export const isTodoCompleted = function (todo) {
@@ -52,5 +58,5 @@ export const isTodoCompleted = function (todo) {
 
 export const isTodoOverdue = function (todo) {
   const todayDate = getYYYYMMDDDateString(new Date());
-  return getYYYYMMDDDateString(todo.dueDate) > todayDate && !todo.isCompleted;
+  return getYYYYMMDDDateString(todo.dueDate) < todayDate && !todo.isCompleted;
 };
