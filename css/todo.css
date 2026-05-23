@@ -18,10 +18,15 @@
   margin-bottom: var(--space-md);
 }
 
-.is-selecting .todo-form,
+.is-selecting .todo-form {
+  display: none !important;
+}
+
+.is-selecting [data-action="complete"],
 .is-selecting [data-action="edit"],
 .is-selecting [data-action="delete"] {
-  display: none !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .todo-form .input {
