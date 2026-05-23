@@ -46,68 +46,70 @@
       </section>
       <section class="page-section" data-section="todo">
         <h2>Todo</h2>
-        <form class="todo-form">
-          <input
-            type="text"
-            name="todo-input"
-            placeholder="What needs to be done ?"
-            class="input"
-            required
-          />
-          <input
-            type="date"
-            name="todo-date"
-            class="input"
-            placeholder="Due Date"
-            required
-          />
-          <span class="select-wrap">
-            <select class="input" name="todo-priority" required></select>
-          </span>
-          <button type="submit" class="btn btn-primary" name="add-todo">
-            Add
-          </button>
-          <button type="reset" class="btn btn-secondary">Cancel</button>
-        </form>
-        <div class="bulk-actions card" data-role="bulk-actions">
-          <div class="bulk-actions__meta">
-            <label class="bulk-toggle">
-              <input
-                type="checkbox"
-                class="checkbox"
-                data-action="bulk-toggle-all"
-              />
-            </label>
-
-            <p class="bulk-actions__count" data-role="selected-count">
-              0 Selected
-            </p>
-          </div>
-
-          <div class="bulk-actions__list">
-            <button
-              type="button"
-              class="toolbar-link"
-              data-action="bulk-complete"
-            >
-              Mark as Completed
+        <div class="todo-toolbar">
+          <form class="todo-form">
+            <input
+              type="text"
+              name="todo-input"
+              placeholder="What needs to be done ?"
+              class="input"
+              required
+            />
+            <input
+              type="date"
+              name="todo-date"
+              class="input"
+              placeholder="Due Date"
+              required
+            />
+            <span class="select-wrap">
+              <select class="input" name="todo-priority" required></select>
+            </span>
+            <button type="submit" class="btn btn-primary" name="add-todo">
+              Add
             </button>
+            <button type="reset" class="btn btn-secondary">Cancel</button>
+          </form>
+          <div class="bulk-actions card" data-role="bulk-actions">
+            <div class="bulk-actions__meta">
+              <label class="bulk-toggle">
+                <input
+                  type="checkbox"
+                  class="checkbox"
+                  data-action="bulk-toggle-all"
+                />
+              </label>
 
-            <button
-              type="button"
-              class="toolbar-link"
-              data-action="bulk-incomplete"
-            >
-              Mark as Incomplete
-            </button>
+              <p class="bulk-actions__count" data-role="selected-count">
+                0 Selected
+              </p>
+            </div>
 
-            <button
-              type="button"
-              class="toolbar-link"
-              data-action="bulk-delete"
-            >
-              Delete Selected
-            </button>
+            <div class="bulk-actions__list">
+              <button
+                type="button"
+                class="toolbar-link"
+                data-action="bulk-complete"
+              >
+                Mark as Completed
+              </button>
+
+              <button
+                type="button"
+                class="toolbar-link"
+                data-action="bulk-incomplete"
+              >
+                Mark as Incomplete
+              </button>
+
+              <button
+                type="button"
+                class="toolbar-link"
+                data-action="bulk-delete"
+              >
+                Delete Selected
+              </button>
+            </div>
           </div>
         </div>
         <section>

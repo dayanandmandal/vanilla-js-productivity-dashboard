@@ -1,3 +1,16 @@
+.todo-toolbar {
+  position: relative;
+  min-height: 60px;
+}
+
+.todo-form,
+.bulk-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 .todo-form {
   display: flex;
   gap: var(--space-sm);
