@@ -1,0 +1,33 @@
+.timer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  width: 250px;
+  aspect-ratio: 1;
+  border: 5px solid var(--app-border);
+  border-radius: 50%;
+}
+
+.timer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.timer-actions .btn {
+  width: 120px;
+}
+
+.is-idle .btn[data-action="timer-reset"],
+.is-running .btn[data-action="timer-reset"] {
+  opacity: 0;
+  pointer-events: none;
+}

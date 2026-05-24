@@ -47,6 +47,12 @@ export const loadSet = function (key, fallback) {
   return saved.length ? new Set(saved) : fallback;
 };
 
+export const loadTimestamp = function (key, fallback) {
+  const timestamp = localStorage.getItem(key);
+
+  return timestamp ? new Date(timestamp) : fallback;
+};
+
 export const isTodoActive = function (todo) {
   const todayDate = getYYYYMMDDDateString(new Date());
   return getYYYYMMDDDateString(todo.dueDate) >= todayDate && !todo.isCompleted;

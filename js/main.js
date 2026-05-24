@@ -14,8 +14,19 @@ import {
   setUpNotesEvent,
   sortNotesList,
 } from "./modules/notes.js";
-import { STORAGE_KEYS } from "./helpers/constants.js";
-import { loadJSON, loadNumber, loadSet, loadString } from "./helpers/utils.js";
+import {
+  STORAGE_KEYS,
+  TIMER_DEFAULT_SECONDS,
+  TIMER_STATUS,
+} from "./helpers/constants.js";
+import {
+  loadJSON,
+  loadNumber,
+  loadSet,
+  loadString,
+  loadTimestamp,
+} from "./helpers/utils.js";
+import { renderTimerCount, setUpTimerEvents } from "./modules/timer.js";
 
 const state = {
   app: {
@@ -41,6 +52,16 @@ const state = {
       draft: loadJSON(STORAGE_KEYS.NOTES_DRAFT, { title: "", desc: "" }),
       sortDirection: loadString(STORAGE_KEYS.NOTES_SORT, "desc"),
     },
+  },
+
+  timer: {
+    status: loadString(STORAGE_KEYS.TIMER_STATUS, TIMER_STATUS.IDLE),
+    startTimestamp: loadTimestamp(STORAGE_KEYS.TIMER_START_TIMESTAMP, null),
+    totalDuration: loadNumber(
+      STORAGE_KEYS.TIMER_TOTAL_DURATION,
+      TIMER_DEFAULT_SECONDS,
+    ),
+    durationLeft: loadNumber(STORAGE_KEYS.TIMER_DURATION_LEFT, null),
   },
 };
 
@@ -110,6 +131,10 @@ const renderNotesScreen = function () {
   renderNotesFormFromDraft(state);
 };
 
+const renderTimerScreen = function () {
+  renderTimerCount(state);
+};
+
 const render = function () {
   renderApp();
 
@@ -120,6 +145,10 @@ const render = function () {
 
     case "notes":
       renderNotesScreen();
+      break;
+
+    case "timer":
+      renderTimerScreen();
       break;
   }
 };
@@ -160,5 +189,6 @@ const render = function () {
 
 setupTodoEvents(state, render);
 setUpNotesEvent(state, render);
+setUpTimerEvents(state, render);
 
 render();

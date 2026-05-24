@@ -1,3 +1,6 @@
+UI never decides state
+state decides UI
+
 Mental model (lock this in)
 
 - DOM is a view
@@ -72,3 +75,5 @@ Separate STATE LOGIC from DOM LOGIC - A fucntion should only works with STATE or
 - Render layer should not know business logic.
 
 - input, textarea, button, select are some of the several form elements that do not automatically inherit font properties from their parents in most browsers (Chrome, Safari, and Edge).
+
+_Timer(which i develop) is state + live side-effect (interval) not just state-driven_

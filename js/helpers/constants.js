@@ -13,6 +13,11 @@ export const STORAGE_KEYS = {
   NOTES_DRAFT: "notesDraft",
   NOTES_SORT: "notesSortDirection",
   NOTES_EDITING_ID: "notesEditingId",
+
+  TIMER_STATUS: "timerStatus",
+  TIMER_START_TIMESTAMP: "timerStartTimestamp",
+  TIMER_TOTAL_DURATION: "timerTotalDuration",
+  TIMER_DURATION_LEFT: "timerDurationLeft",
 };
 
 export const TODO_PRIORITY = {
@@ -57,4 +62,18 @@ export const EMPTY_STATE = {
     title: "No overdue tasks",
     desc: "You're all caught up 🚀",
   },
+};
+
+export const TIMER_DEFAULT_SECONDS = 1500;
+
+export const TIMER_STATUS = {
+  IDLE: "idle",
+  RUNNING: "running",
+  PAUSED: "paused",
+};
+
+export const TIMER_BUTTON_LABEL = {
+  [TIMER_STATUS.IDLE]: "Start",
+  [TIMER_STATUS.RUNNING]: "Pause",
+  [TIMER_STATUS.PAUSED]: "Resume",
 };
