@@ -80,13 +80,19 @@ const formatRemainingTime = function (
 // idle => running
 // running => paused
 // paused => running
+// completed => idle
 const timerToggle = function (state) {
   const timer = getTimer(state);
 
-  const nextStatus =
+  let nextStatus =
     timer.status === TIMER_STATUS.RUNNING
       ? TIMER_STATUS.PAUSED
       : TIMER_STATUS.RUNNING;
+
+  if (timer.status === TIMER_STATUS.COMPLETED) {
+    timerReset(state);
+    nextStatus = TIMER_STATUS.IDLE;
+  }
 
   if (timer.status === TIMER_STATUS.PAUSED) {
     // when user resume the timer
@@ -129,7 +135,7 @@ const checkRemainingTime = function (state) {
     Math.floor((Date.now() - timer.startTimestamp) / 1000);
 
   if (remaining <= 0) {
-    timerReset(state);
+    setTimerStatus(state, TIMER_STATUS.COMPLETED);
     resetTimerIntervalId();
     persistTimerState(state);
   }
@@ -219,7 +225,12 @@ export const renderTimerCount = function (state) {
 
   const timer = getTimer(state);
 
-  timerSectionEle.classList.remove("is-idle", "is-running", "is-paused");
+  timerSectionEle.classList.remove(
+    "is-idle",
+    "is-running",
+    "is-paused",
+    "is-completed",
+  );
   timerSectionEle.classList.add(`is-${timer.status.toLowerCase()}`);
 
   timerDisplayEle.textContent = formatRemainingTime(

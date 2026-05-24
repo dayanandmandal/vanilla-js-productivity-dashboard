@@ -27,7 +27,8 @@
 }
 
 .is-idle .btn[data-action="timer-reset"],
-.is-running .btn[data-action="timer-reset"] {
+.is-running .btn[data-action="timer-reset"],
+.is-completed .btn[data-action="timer-reset"] {
   opacity: 0;
   pointer-events: none;
 }

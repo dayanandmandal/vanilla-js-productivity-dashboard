@@ -70,10 +70,12 @@ export const TIMER_STATUS = {
   IDLE: "idle",
   RUNNING: "running",
   PAUSED: "paused",
+  COMPLETED: "completed",
 };
 
 export const TIMER_BUTTON_LABEL = {
   [TIMER_STATUS.IDLE]: "Start",
   [TIMER_STATUS.RUNNING]: "Pause",
   [TIMER_STATUS.PAUSED]: "Resume",
+  [TIMER_STATUS.COMPLETED]: "Restart",
 };
