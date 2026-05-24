@@ -58,7 +58,7 @@ const state = {
     status: loadString(STORAGE_KEYS.TIMER_STATUS, TIMER_STATUS.IDLE),
     startTimestamp: loadTimestamp(STORAGE_KEYS.TIMER_START_TIMESTAMP, null),
     durationLeft: loadNumber(STORAGE_KEYS.TIMER_DURATION_LEFT, null),
-    mode: TIMER_MODE.FOCUS,
+    mode: loadString(STORAGE_KEYS.TIMER_MODE, TIMER_MODE.FOCUS),
   },
 };
 
