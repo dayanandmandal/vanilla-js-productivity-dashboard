@@ -1,12 +1,14 @@
 import {
   STORAGE_KEYS,
   TIMER_BUTTON_LABEL,
-  TIMER_DEFAULT_SECONDS,
+  TIMER_MODE,
+  TIMER_MODE_CONFIG,
   TIMER_STATUS,
 } from "../helpers/constants.js";
 import {
   getTimer,
   setTimerDurationLeft,
+  setTimerMode,
   setTimerStartTimestamp,
   setTimerStatus,
 } from "../helpers/timerService.js";
@@ -40,19 +42,16 @@ const persistTimerState = function (state) {
     localStorage.removeItem(STORAGE_KEYS.TIMER_START_TIMESTAMP);
   }
 
-  if (typeof timer.totalDuration === "number") {
-    localStorage.setItem(
-      STORAGE_KEYS.TIMER_TOTAL_DURATION,
-      timer.totalDuration,
-    );
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.TIMER_TOTAL_DURATION);
-  }
-
   if (typeof timer.durationLeft === "number") {
     localStorage.setItem(STORAGE_KEYS.TIMER_DURATION_LEFT, timer.durationLeft);
   } else {
     localStorage.removeItem(STORAGE_KEYS.TIMER_DURATION_LEFT);
+  }
+
+  if (timer.mode) {
+    localStorage.setItem(STORAGE_KEYS.TIMER_MODE, timer.mode);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.TIMER_MODE);
   }
 };
 
@@ -96,7 +95,8 @@ const timerToggle = function (state) {
 
   if (timer.status === TIMER_STATUS.PAUSED) {
     // when user resume the timer
-    const timeElaspedInSec = timer.totalDuration - timer.durationLeft;
+    const timeElaspedInSec =
+      TIMER_MODE_CONFIG[timer.mode].duration - timer.durationLeft;
     const startTimestamp = new Date(Date.now() - timeElaspedInSec * 1000);
     setTimerStartTimestamp(state, startTimestamp);
     setTimerDurationLeft(state, null);
@@ -109,7 +109,7 @@ const timerToggle = function (state) {
   if (nextStatus === TIMER_STATUS.PAUSED) {
     // when user click on pause
     let durationLeft =
-      timer.totalDuration -
+      TIMER_MODE_CONFIG[timer.mode].duration -
       Math.floor((Date.now() - timer.startTimestamp) / 1000);
 
     durationLeft = Math.max(0, durationLeft);
@@ -131,7 +131,7 @@ const checkRemainingTime = function (state) {
   const timer = getTimer(state);
 
   const remaining =
-    timer.totalDuration -
+    TIMER_MODE_CONFIG[timer.mode].duration -
     Math.floor((Date.now() - timer.startTimestamp) / 1000);
 
   if (remaining <= 0) {
@@ -197,6 +197,32 @@ const setUpClickActionEvents = function (state, render) {
   timerEle.addEventListener("click", handleClickActionEvents);
 };
 
+const setUpTimerModesEvents = function (state, render) {
+  const handleTimerModesEvents = function (event) {
+    const element = event.target.closest("[data-mode]");
+    if (!element) return;
+
+    const timer = getTimer(state);
+    if (element.dataset.mode === timer.mode) return;
+
+    setTimerMode(state, element.dataset.mode);
+    timerReset(state);
+    resetTimerIntervalId();
+    persistTimerState(state);
+    render();
+  };
+
+  const timerSectionEle = document.querySelector(
+    ".page-section[data-section='timer']",
+  );
+  if (!timerSectionEle) return;
+
+  const timerModesEle = timerSectionEle.querySelector("#timer-modes");
+  if (!timerModesEle) return;
+
+  timerModesEle.addEventListener("click", handleTimerModesEvents);
+};
+
 const restoreRunningTimer = function (state, render) {
   const timer = getTimer(state);
 
@@ -206,14 +232,34 @@ const restoreRunningTimer = function (state, render) {
 };
 
 export const setUpTimerEvents = function (state, render) {
+  setUpTimerModesEvents(state, render);
   setUpClickActionEvents(state, render);
   restoreRunningTimer(state, render);
+};
+
+export const renderTimerModeTab = function (state) {
+  const timerSectionEle = document.querySelector(
+    ".page-section[data-section='timer']",
+  );
+  if (!timerSectionEle) return;
+
+  const timerModeTabs = timerSectionEle.querySelectorAll("#timer-modes .tab");
+  if (!timerModeTabs.length) return;
+
+  const timer = getTimer(state);
+
+  for (let tab of timerModeTabs) {
+    const isActive = tab.dataset.mode === timer.mode;
+    tab.classList.toggle("active", isActive);
+  }
 };
 
 export const renderTimerCount = function (state) {
   const timerSectionEle = document.querySelector(
     ".page-section[data-section='timer']",
   );
+  if (!timerSectionEle) return;
+
   const timerDisplayEle = timerSectionEle.querySelector(
     "[data-role='timer-display']",
   );
@@ -221,7 +267,7 @@ export const renderTimerCount = function (state) {
     "[data-action='timer-toggle']",
   );
 
-  if (!timerSectionEle || !timerDisplayEle || !timerToggleEle) return;
+  if (!timerDisplayEle || !timerToggleEle) return;
 
   const timer = getTimer(state);
 
@@ -235,7 +281,7 @@ export const renderTimerCount = function (state) {
 
   timerDisplayEle.textContent = formatRemainingTime(
     timer.startTimestamp,
-    timer.totalDuration,
+    TIMER_MODE_CONFIG[timer.mode].duration,
     timer.durationLeft,
   );
 

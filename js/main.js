@@ -14,11 +14,7 @@ import {
   setUpNotesEvent,
   sortNotesList,
 } from "./modules/notes.js";
-import {
-  STORAGE_KEYS,
-  TIMER_DEFAULT_SECONDS,
-  TIMER_STATUS,
-} from "./helpers/constants.js";
+import { STORAGE_KEYS, TIMER_MODE, TIMER_STATUS } from "./helpers/constants.js";
 import {
   loadJSON,
   loadNumber,
@@ -26,7 +22,11 @@ import {
   loadString,
   loadTimestamp,
 } from "./helpers/utils.js";
-import { renderTimerCount, setUpTimerEvents } from "./modules/timer.js";
+import {
+  renderTimerCount,
+  renderTimerModeTab,
+  setUpTimerEvents,
+} from "./modules/timer.js";
 
 const state = {
   app: {
@@ -57,11 +57,8 @@ const state = {
   timer: {
     status: loadString(STORAGE_KEYS.TIMER_STATUS, TIMER_STATUS.IDLE),
     startTimestamp: loadTimestamp(STORAGE_KEYS.TIMER_START_TIMESTAMP, null),
-    totalDuration: loadNumber(
-      STORAGE_KEYS.TIMER_TOTAL_DURATION,
-      TIMER_DEFAULT_SECONDS,
-    ),
     durationLeft: loadNumber(STORAGE_KEYS.TIMER_DURATION_LEFT, null),
+    mode: TIMER_MODE.FOCUS,
   },
 };
 
@@ -132,6 +129,7 @@ const renderNotesScreen = function () {
 };
 
 const renderTimerScreen = function () {
+  renderTimerModeTab(state);
   renderTimerCount(state);
 };
 

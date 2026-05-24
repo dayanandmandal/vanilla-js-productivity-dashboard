@@ -16,3 +16,8 @@ export const setTimerDurationLeft = function (state, durationLeft) {
   const timer = getTimer(state);
   timer.durationLeft = durationLeft;
 };
+
+export const setTimerMode = function (state, mode) {
+  const timer = getTimer(state);
+  timer.mode = mode;
+};

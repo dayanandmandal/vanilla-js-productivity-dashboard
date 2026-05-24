@@ -16,8 +16,8 @@ export const STORAGE_KEYS = {
 
   TIMER_STATUS: "timerStatus",
   TIMER_START_TIMESTAMP: "timerStartTimestamp",
-  TIMER_TOTAL_DURATION: "timerTotalDuration",
   TIMER_DURATION_LEFT: "timerDurationLeft",
+  TIMER_MODE: "timerMode",
 };
 
 export const TODO_PRIORITY = {
@@ -64,8 +64,6 @@ export const EMPTY_STATE = {
   },
 };
 
-export const TIMER_DEFAULT_SECONDS = 1500;
-
 export const TIMER_STATUS = {
   IDLE: "idle",
   RUNNING: "running",
@@ -78,4 +76,27 @@ export const TIMER_BUTTON_LABEL = {
   [TIMER_STATUS.RUNNING]: "Pause",
   [TIMER_STATUS.PAUSED]: "Resume",
   [TIMER_STATUS.COMPLETED]: "Restart",
+};
+
+export const TIMER_MODE = {
+  FOCUS: "focus",
+  SHORT_BREAK: "short-break",
+  LONG_BREAK: "long-break",
+};
+
+export const TIMER_MODE_CONFIG = {
+  [TIMER_MODE.FOCUS]: {
+    label: "Focus",
+    duration: 1500,
+  },
+
+  [TIMER_MODE.SHORT_BREAK]: {
+    label: "Short Break",
+    duration: 300,
+  },
+
+  [TIMER_MODE.LONG_BREAK]: {
+    label: "Long Break",
+    duration: 900,
+  },
 };
