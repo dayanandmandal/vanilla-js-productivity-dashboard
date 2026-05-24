@@ -120,7 +120,7 @@ const markAsIncompleted = function (state) {
 
   selectedIds.forEach((todoId) => {
     const todo = todoIdMap.get(todoId);
-    if (todo) todo.isCompleted = true;
+    if (todo) todo.isCompleted = false;
     else console.error(`${todoId} not found`);
   });
 
