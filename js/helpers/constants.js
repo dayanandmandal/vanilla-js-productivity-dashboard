@@ -75,7 +75,7 @@ export const TIMER_BUTTON_LABEL = {
   [TIMER_STATUS.IDLE]: "Start",
   [TIMER_STATUS.RUNNING]: "Pause",
   [TIMER_STATUS.PAUSED]: "Resume",
-  [TIMER_STATUS.COMPLETED]: "Restart",
+  [TIMER_STATUS.COMPLETED]: "", // not applicable for primary toggle button
 };
 
 export const TIMER_MODE = {
@@ -92,7 +92,7 @@ export const TIMER_MODE_CONFIG = {
 
   [TIMER_MODE.SHORT_BREAK]: {
     label: "Short Break",
-    duration: 300,
+    duration: 5,
   },
 
   [TIMER_MODE.LONG_BREAK]: {
