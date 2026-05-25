@@ -1,7 +1,6 @@
 import {
   STORAGE_KEYS,
   TIMER_BUTTON_LABEL,
-  TIMER_MODE,
   TIMER_MODE_CONFIG,
   TIMER_STATUS,
 } from "../helpers/constants.js";
@@ -12,8 +11,21 @@ import {
   setTimerStartTimestamp,
   setTimerStatus,
 } from "../helpers/timerService.js";
+import { persistStorageValue } from "../helpers/utils.js";
 
 let timerIntervalId = null;
+
+const getTimerSection = function () {
+  return document.querySelector(".page-section[data-section='timer']");
+};
+
+const getElapsedSeconds = function (startTimestamp) {
+  return Math.floor((Date.now() - startTimestamp) / 1000);
+};
+
+const getTimerDuration = function (mode) {
+  return TIMER_MODE_CONFIG[mode].duration;
+};
 
 const resetTimerIntervalId = function () {
   if (timerIntervalId) {
@@ -27,47 +39,21 @@ const resetTimerIntervalId = function () {
 
 const persistTimerState = function (state) {
   const timer = getTimer(state);
-  if (timer.status) {
-    localStorage.setItem(STORAGE_KEYS.TIMER_STATUS, timer.status);
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.TIMER_STATUS);
-  }
 
-  if (timer.startTimestamp instanceof Date) {
-    localStorage.setItem(
-      STORAGE_KEYS.TIMER_START_TIMESTAMP,
-      timer.startTimestamp,
-    );
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.TIMER_START_TIMESTAMP);
-  }
+  const startTimestamp =
+    timer.startTimestamp instanceof Date ? timer.startTimestamp : null;
 
-  if (typeof timer.durationLeft === "number") {
-    localStorage.setItem(STORAGE_KEYS.TIMER_DURATION_LEFT, timer.durationLeft);
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.TIMER_DURATION_LEFT);
-  }
+  const durationLeft =
+    typeof timer.durationLeft === "number" ? timer.durationLeft : null;
 
-  if (timer.mode) {
-    localStorage.setItem(STORAGE_KEYS.TIMER_MODE, timer.mode);
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.TIMER_MODE);
-  }
+  persistStorageValue(STORAGE_KEYS.TIMER_MODE, timer.mode);
+  persistStorageValue(STORAGE_KEYS.TIMER_STATUS, timer.status);
+  persistStorageValue(STORAGE_KEYS.TIMER_START_TIMESTAMP, startTimestamp);
+  persistStorageValue(STORAGE_KEYS.TIMER_DURATION_LEFT, durationLeft);
 };
 
-const formatRemainingTime = function (
-  startTimestamp,
-  totalDuration,
-  durationLeft,
-) {
-  let remainingTimeInSeconds = totalDuration;
-
-  if (startTimestamp) {
-    const timeElaspedInSec = Math.floor((Date.now() - startTimestamp) / 1000);
-    remainingTimeInSeconds -= timeElaspedInSec;
-  } else if (typeof durationLeft === "number") {
-    remainingTimeInSeconds = durationLeft;
-  }
+const getFormattedRemainingTime = function (timer) {
+  let remainingTimeInSeconds = getRemainingSeconds(timer);
 
   remainingTimeInSeconds = Math.max(0, remainingTimeInSeconds);
   const mins = String(Math.floor(remainingTimeInSeconds / 60)).padStart(2, "0");
@@ -76,49 +62,42 @@ const formatRemainingTime = function (
   return `${mins}:${secs}`;
 };
 
-// idle => running
-// running => paused
-// paused => running
-// completed => idle
-const timerToggle = function (state) {
+const getRemainingSeconds = function (timer) {
+  if (timer.status === TIMER_STATUS.PAUSED) {
+    return Math.max(0, timer.durationLeft);
+  }
+
+  if (timer.startTimestamp) {
+    const remainingTimeInSec =
+      getTimerDuration(timer.mode) - getElapsedSeconds(timer.startTimestamp);
+
+    return Math.max(0, remainingTimeInSec);
+  }
+
+  return getTimerDuration(timer.mode);
+};
+
+const startTimer = function (state) {
+  setTimerStartTimestamp(state, new Date());
+  setTimerDurationLeft(state, null);
+};
+
+const pauseTimer = function (state) {
   const timer = getTimer(state);
 
-  let nextStatus =
-    timer.status === TIMER_STATUS.RUNNING
-      ? TIMER_STATUS.PAUSED
-      : TIMER_STATUS.RUNNING;
+  const durationLeft = getRemainingSeconds(timer);
 
-  if (timer.status === TIMER_STATUS.COMPLETED) {
-    timerReset(state);
-    nextStatus = TIMER_STATUS.IDLE;
-  }
+  setTimerDurationLeft(state, durationLeft);
+  setTimerStartTimestamp(state, null);
+};
 
-  if (timer.status === TIMER_STATUS.PAUSED) {
-    // when user resume the timer
-    const timeElaspedInSec =
-      TIMER_MODE_CONFIG[timer.mode].duration - timer.durationLeft;
-    const startTimestamp = new Date(Date.now() - timeElaspedInSec * 1000);
-    setTimerStartTimestamp(state, startTimestamp);
-    setTimerDurationLeft(state, null);
-  } else if (nextStatus === TIMER_STATUS.RUNNING) {
-    // when user start the timer
-    setTimerStartTimestamp(state, new Date());
-    setTimerDurationLeft(state, null);
-  }
+const resumeTimer = function (state) {
+  const timer = getTimer(state);
 
-  if (nextStatus === TIMER_STATUS.PAUSED) {
-    // when user click on pause
-    let durationLeft =
-      TIMER_MODE_CONFIG[timer.mode].duration -
-      Math.floor((Date.now() - timer.startTimestamp) / 1000);
-
-    durationLeft = Math.max(0, durationLeft);
-
-    setTimerDurationLeft(state, durationLeft);
-    setTimerStartTimestamp(state, null);
-  }
-
-  setTimerStatus(state, nextStatus);
+  const timeElapsedInSec = getTimerDuration(timer.mode) - timer.durationLeft;
+  const startTimestamp = new Date(Date.now() - timeElapsedInSec * 1000);
+  setTimerStartTimestamp(state, startTimestamp);
+  setTimerDurationLeft(state, null);
 };
 
 const timerReset = function (state) {
@@ -127,12 +106,39 @@ const timerReset = function (state) {
   setTimerDurationLeft(state, null);
 };
 
+const timerToggle = function (state) {
+  const timer = getTimer(state);
+  let nextStatus = TIMER_STATUS.IDLE;
+
+  switch (timer.status) {
+    case TIMER_STATUS.IDLE: {
+      startTimer(state);
+      nextStatus = TIMER_STATUS.RUNNING;
+      break;
+    }
+    case TIMER_STATUS.RUNNING: {
+      pauseTimer(state);
+      nextStatus = TIMER_STATUS.PAUSED;
+      break;
+    }
+    case TIMER_STATUS.PAUSED: {
+      nextStatus = TIMER_STATUS.RUNNING;
+      resumeTimer(state);
+      break;
+    }
+    case TIMER_STATUS.COMPLETED: {
+      // reset button will handle this
+      return;
+    }
+  }
+
+  setTimerStatus(state, nextStatus);
+};
+
 const checkRemainingTime = function (state) {
   const timer = getTimer(state);
 
-  const remaining =
-    TIMER_MODE_CONFIG[timer.mode].duration -
-    Math.floor((Date.now() - timer.startTimestamp) / 1000);
+  const remaining = getRemainingSeconds(timer);
 
   if (remaining <= 0) {
     setTimerStatus(state, TIMER_STATUS.COMPLETED);
@@ -141,24 +147,22 @@ const checkRemainingTime = function (state) {
   }
 };
 
-const handleTimerToggleInterval = function (state, render) {
+const syncRunningInterval = function (state, render) {
+  if (timerIntervalId) return;
+
+  timerIntervalId = setInterval(() => {
+    checkRemainingTime(state);
+    render();
+  }, 1000);
+};
+
+const syncTimerInterval = function (state, render) {
   const timer = getTimer(state);
 
-  switch (timer.status) {
-    case TIMER_STATUS.RUNNING: {
-      const timer = getTimer(state);
-      if (timerIntervalId) return;
-      timerIntervalId = setInterval(() => {
-        checkRemainingTime(state);
-        render();
-      }, 1000);
-      break;
-    }
-
-    case TIMER_STATUS.PAUSED: {
-      resetTimerIntervalId();
-      break;
-    }
+  if (timer.status !== TIMER_STATUS.RUNNING) {
+    resetTimerIntervalId();
+  } else {
+    syncRunningInterval(state, render);
   }
 };
 
@@ -170,7 +174,7 @@ const setUpClickActionEvents = function (state, render) {
     switch (element.dataset.action) {
       case "timer-toggle": {
         timerToggle(state);
-        handleTimerToggleInterval(state, render);
+        syncTimerInterval(state, render);
         persistTimerState(state);
         render();
         break;
@@ -178,7 +182,7 @@ const setUpClickActionEvents = function (state, render) {
 
       case "timer-reset": {
         timerReset(state);
-        resetTimerIntervalId();
+        syncTimerInterval(state, render);
         persistTimerState(state);
         render();
         break;
@@ -186,9 +190,7 @@ const setUpClickActionEvents = function (state, render) {
     }
   };
 
-  const timerSectionEle = document.querySelector(
-    ".page-section[data-section='timer']",
-  );
+  const timerSectionEle = getTimerSection();
   if (!timerSectionEle) return;
 
   const timerEle = timerSectionEle.querySelector('[data-role="timer"]');
@@ -212,9 +214,7 @@ const setUpTimerModesEvents = function (state, render) {
     render();
   };
 
-  const timerSectionEle = document.querySelector(
-    ".page-section[data-section='timer']",
-  );
+  const timerSectionEle = getTimerSection();
   if (!timerSectionEle) return;
 
   const timerModesEle = timerSectionEle.querySelector("#timer-modes");
@@ -224,11 +224,13 @@ const setUpTimerModesEvents = function (state, render) {
 };
 
 const restoreRunningTimer = function (state, render) {
-  const timer = getTimer(state);
+  checkRemainingTime(state);
 
-  if (timer.status !== TIMER_STATUS.RUNNING) return;
+  const updatedTimer = getTimer(state);
 
-  handleTimerToggleInterval(state, render);
+  if (updatedTimer.status === TIMER_STATUS.RUNNING) {
+    syncRunningInterval(state, render);
+  }
 };
 
 export const setUpTimerEvents = function (state, render) {
@@ -238,9 +240,7 @@ export const setUpTimerEvents = function (state, render) {
 };
 
 export const renderTimerModeTab = function (state) {
-  const timerSectionEle = document.querySelector(
-    ".page-section[data-section='timer']",
-  );
+  const timerSectionEle = getTimerSection();
   if (!timerSectionEle) return;
 
   const timerModeTabs = timerSectionEle.querySelectorAll("#timer-modes .tab");
@@ -254,10 +254,18 @@ export const renderTimerModeTab = function (state) {
   }
 };
 
-export const renderTimerCount = function (state) {
-  const timerSectionEle = document.querySelector(
-    ".page-section[data-section='timer']",
+const renderTimerStatus = function (timerSectionEle, status) {
+  timerSectionEle.classList.remove(
+    "is-idle",
+    "is-running",
+    "is-paused",
+    "is-completed",
   );
+  timerSectionEle.classList.add(`is-${status}`);
+};
+
+export const renderTimer = function (state) {
+  const timerSectionEle = getTimerSection();
   if (!timerSectionEle) return;
 
   const timerDisplayEle = timerSectionEle.querySelector(
@@ -271,19 +279,9 @@ export const renderTimerCount = function (state) {
 
   const timer = getTimer(state);
 
-  timerSectionEle.classList.remove(
-    "is-idle",
-    "is-running",
-    "is-paused",
-    "is-completed",
-  );
-  timerSectionEle.classList.add(`is-${timer.status.toLowerCase()}`);
+  renderTimerStatus(timerSectionEle, timer.status);
 
-  timerDisplayEle.textContent = formatRemainingTime(
-    timer.startTimestamp,
-    TIMER_MODE_CONFIG[timer.mode].duration,
-    timer.durationLeft,
-  );
+  timerDisplayEle.textContent = getFormattedRemainingTime(timer);
 
   const toggleBtnText =
     TIMER_BUTTON_LABEL[timer.status] ?? TIMER_BUTTON_LABEL[TIMER_STATUS.IDLE];

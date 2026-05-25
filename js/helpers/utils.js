@@ -66,3 +66,12 @@ export const isTodoOverdue = function (todo) {
   const todayDate = getYYYYMMDDDateString(new Date());
   return getYYYYMMDDDateString(todo.dueDate) < todayDate && !todo.isCompleted;
 };
+
+export const persistStorageValue = function (key, value) {
+  if (value === null || value === undefined) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  localStorage.setItem(key, value);
+};

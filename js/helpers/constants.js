@@ -92,7 +92,7 @@ export const TIMER_MODE_CONFIG = {
 
   [TIMER_MODE.SHORT_BREAK]: {
     label: "Short Break",
-    duration: 5,
+    duration: 300,
   },
 
   [TIMER_MODE.LONG_BREAK]: {

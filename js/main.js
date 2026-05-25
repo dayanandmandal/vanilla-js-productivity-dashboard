@@ -23,7 +23,7 @@ import {
   loadTimestamp,
 } from "./helpers/utils.js";
 import {
-  renderTimerCount,
+  renderTimer,
   renderTimerModeTab,
   setUpTimerEvents,
 } from "./modules/timer.js";
@@ -130,7 +130,7 @@ const renderNotesScreen = function () {
 
 const renderTimerScreen = function () {
   renderTimerModeTab(state);
-  renderTimerCount(state);
+  renderTimer(state);
 };
 
 const render = function () {
