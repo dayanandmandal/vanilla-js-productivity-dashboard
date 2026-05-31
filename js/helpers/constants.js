@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   TIMER_START_TIMESTAMP: "timerStartTimestamp",
   TIMER_DURATION_LEFT: "timerDurationLeft",
   TIMER_MODE: "timerMode",
+  TIMER_HISTORY: "timerHistory",
 };
 
 export const TODO_PRIORITY = {

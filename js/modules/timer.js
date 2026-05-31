@@ -50,6 +50,10 @@ const persistTimerState = function (state) {
   persistStorageValue(STORAGE_KEYS.TIMER_STATUS, timer.status);
   persistStorageValue(STORAGE_KEYS.TIMER_START_TIMESTAMP, startTimestamp);
   persistStorageValue(STORAGE_KEYS.TIMER_DURATION_LEFT, durationLeft);
+  persistStorageValue(
+    STORAGE_KEYS.TIMER_HISTORY,
+    JSON.stringify(timer.history),
+  );
 };
 
 const getFormattedRemainingTime = function (timer) {
@@ -100,6 +104,30 @@ const resumeTimer = function (state) {
   setTimerDurationLeft(state, null);
 };
 
+const addTimerHistory = function (state) {
+  const timer = getTimer(state);
+
+  const historyItem = {
+    id: Date.now(),
+    mode: timer.mode,
+    duration: getTimerDuration(timer.mode),
+    completedAt: new Date().toISOString(),
+    status: TIMER_STATUS.COMPLETED,
+  };
+
+  timer.history.push(historyItem);
+};
+
+const handleTimerCompletion = function (state) {
+  const timer = getTimer(state);
+  if (timer.status === TIMER_STATUS.COMPLETED) return;
+
+  setTimerStatus(state, TIMER_STATUS.COMPLETED);
+  addTimerHistory(state);
+  resetTimerIntervalId();
+  persistTimerState(state);
+};
+
 const timerReset = function (state) {
   setTimerStatus(state, TIMER_STATUS.IDLE);
   setTimerStartTimestamp(state, null);
@@ -140,11 +168,9 @@ const checkRemainingTime = function (state) {
 
   const remaining = getRemainingSeconds(timer);
 
-  if (remaining <= 0) {
-    setTimerStatus(state, TIMER_STATUS.COMPLETED);
-    resetTimerIntervalId();
-    persistTimerState(state);
-  }
+  if (remaining > 0) return;
+
+  handleTimerCompletion(state);
 };
 
 const syncRunningInterval = function (state, render) {

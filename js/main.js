@@ -59,6 +59,7 @@ const state = {
     startTimestamp: loadTimestamp(STORAGE_KEYS.TIMER_START_TIMESTAMP, null),
     durationLeft: loadNumber(STORAGE_KEYS.TIMER_DURATION_LEFT, null),
     mode: loadString(STORAGE_KEYS.TIMER_MODE, TIMER_MODE.FOCUS),
+    history: loadJSON(STORAGE_KEYS.TIMER_HISTORY, []),
   },
 };
 
