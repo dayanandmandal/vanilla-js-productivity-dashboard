@@ -6,6 +6,7 @@
     <title>Productivity Dashboard</title>
     <link rel="stylesheet" href="./css/variables.css" />
     <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/dashboard.css" />
     <link rel="stylesheet" href="./css/todo.css" />
     <link rel="stylesheet" href="./css/notes.css" />
     <link rel="stylesheet" href="./css/timer.css" />
@@ -44,7 +45,127 @@
     <main class="main wrapper">
       <section class="page-section" data-section="dashboard">
         <h2>Dashboard</h2>
+
+        <div class="dashboard-cards">
+          <!-- Total Todos -->
+          <div class="card dashboard-card dashboard-card--total-todos">
+            <div class="card-left">
+              <div class="icon-box">
+                <svg
+                  xmlns="http://w3.org"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 11 2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="card-right">
+              <div class="label">Total Todos</div>
+              <div class="value" data-metric="todo.total">—</div>
+              <div class="subtext" data-metric="todo.remainingText">—</div>
+            </div>
+          </div>
+
+          <!-- Completed Today -->
+          <div class="card dashboard-card dashboard-card--completed-todos">
+            <div class="card-left">
+              <div class="icon-box">
+                <svg
+                  xmlns="http://w3.org"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="label">Completed Today</div>
+              <div class="value" data-metric="todo.completedToday">—</div>
+              <div class="subtext" data-metric="todo.completedTodayText">—</div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card dashboard-card dashboard-card--notes">
+            <div class="card-left">
+              <div class="icon-box">
+                <svg
+                  xmlns="http://w3.org"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+                  />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <line x1="10" y1="9" x2="8" y2="9" />
+                </svg>
+              </div>
+            </div>
+            <div class="card-right">
+              <div class="label">Total Notes</div>
+              <div class="value" data-metric="notes.total">—</div>
+              <div class="subtext">Organize your thoughts</div>
+            </div>
+          </div>
+
+          <!-- Focus Sessions Today -->
+          <div class="card dashboard-card dashboard-card--focus">
+            <div class="card-left">
+              <div class="icon-box">
+                <svg
+                  xmlns="http://w3.org"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="13" r="8" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="5" x2="12" y2="2" />
+                  <line x1="10" y1="2" x2="14" y2="2" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="card-right">
+              <div class="label">Focus Sessions Today</div>
+              <div class="value" data-metric="timer.sessionsToday">—</div>
+              <div class="subtext" data-metric="timer.durationTodayText">—</div>
+            </div>
+          </div>
+        </div>
       </section>
+
       <section class="page-section" data-section="todo">
         <h2>Todo</h2>
         <div class="todo-toolbar">

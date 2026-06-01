@@ -27,6 +27,7 @@ import {
   renderTimerModeTab,
   setUpTimerEvents,
 } from "./modules/timer.js";
+import { renderDashboardCards } from "./modules/dashboard.js";
 
 const state = {
   app: {
@@ -105,6 +106,10 @@ const renderApp = function () {
   renderContent();
 };
 
+const renderDashboardScreen = function () {
+  renderDashboardCards(state);
+};
+
 const renderTodoScreen = function () {
   renderTodoPriorityOptions();
   renderTodoBulkEditing(state);
@@ -138,6 +143,10 @@ const render = function () {
   renderApp();
 
   switch (state.app.activeSection) {
+    case "dashboard":
+      renderDashboardScreen();
+      break;
+
     case "todo":
       renderTodoScreen();
       break;
