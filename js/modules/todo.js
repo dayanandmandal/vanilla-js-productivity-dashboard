@@ -251,6 +251,7 @@ const setUpAddTodoEvent = function (state, render) {
         dueDate: state.todo.ui.draft.dueDate,
         priority: state.todo.ui.draft.priority,
         isCompleted: false,
+        completedAt: null,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       };
