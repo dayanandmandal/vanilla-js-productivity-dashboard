@@ -290,6 +290,19 @@ const renderTimerStatus = function (timerSectionEle, status) {
   timerSectionEle.classList.add(`is-${status}`);
 };
 
+const renderTimerProgressCircle = function (timerDisplayEle, timer) {
+  const total = getTimerDuration(timer.mode);
+  const remaining = getRemainingSeconds(timer);
+
+  const elapsed = total - remaining;
+
+  const progress = total > 0 ? elapsed / total : 0;
+
+  const safeProgress = Math.min(Math.max(progress, 0), 1);
+
+  timerDisplayEle.style.setProperty("--progress", safeProgress);
+};
+
 export const renderTimer = function (state) {
   const timerSectionEle = getTimerSection();
   if (!timerSectionEle) return;
@@ -306,6 +319,8 @@ export const renderTimer = function (state) {
   const timer = getTimer(state);
 
   renderTimerStatus(timerSectionEle, timer.status);
+
+  renderTimerProgressCircle(timerDisplayEle, timer);
 
   timerDisplayEle.textContent = getFormattedRemainingTime(timer);
 
