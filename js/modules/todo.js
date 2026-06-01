@@ -93,38 +93,22 @@ const toggleAll = function (state) {
   todos.forEach((todo) => selectedIds.add(todo.id));
 };
 
-const markAsCompleted = function (state) {
-  const selectedIds = state.todo.ui.selectedIds;
-  const todos = state.todo.data;
+const setTodoCompletionState = function (todo, isCompleted) {
+  if (!todo) return;
 
-  const todoIdMap = new Map();
-
-  todos.forEach((todo) => todoIdMap.set(todo.id, todo));
-
-  selectedIds.forEach((todoId) => {
-    const todo = todoIdMap.get(todoId);
-    if (todo) todo.isCompleted = true;
-    else console.error(`${todoId} not found`);
-  });
-
-  selectedIds.clear();
+  todo.isCompleted = isCompleted;
+  todo.completedAt = isCompleted ? Date.now() : null;
 };
 
-const markAsIncompleted = function (state) {
-  const selectedIds = state.todo.ui.selectedIds;
-  const todos = state.todo.data;
+const setMultipleTodoCompletionState = function (state, todoIds, isCompleted) {
+  const todoMap = new Map(state.todo.data.map((todo) => [todo.id, todo]));
 
-  const todoIdMap = new Map();
+  todoIds.forEach((id) => {
+    const todo = todoMap.get(id);
+    if (!todo) return console.error(`${id} not found`);
 
-  todos.forEach((todo) => todoIdMap.set(todo.id, todo));
-
-  selectedIds.forEach((todoId) => {
-    const todo = todoIdMap.get(todoId);
-    if (todo) todo.isCompleted = false;
-    else console.error(`${todoId} not found`);
+    setTodoCompletionState(todo, isCompleted);
   });
-
-  selectedIds.clear();
 };
 
 const deleteSelected = function (state) {
@@ -319,7 +303,7 @@ const setUpTodoActionsEvent = function (state, render) {
     const todo = getTodoById(state.todo.data, todoId);
     if (!todo) return;
 
-    todo.isCompleted = !todo.isCompleted;
+    setTodoCompletionState(todo, !todo.isCompleted);
   };
 
   const handleTodoClick = function (event) {
@@ -390,14 +374,16 @@ export const setUpBulkActionsEvent = function (state, render) {
 
     switch (btnEle.dataset.action) {
       case "bulk-complete": {
-        markAsCompleted(state);
+        setMultipleTodoCompletionState(state, state.todo.ui.selectedIds, true);
+        state.todo.ui.selectedIds.clear();
         persistTodoState(state);
         render();
         break;
       }
 
       case "bulk-incomplete": {
-        markAsIncompleted(state);
+        setMultipleTodoCompletionState(state, state.todo.ui.selectedIds, false);
+        state.todo.ui.selectedIds.clear();
         persistTodoState(state);
         render();
         break;
@@ -506,12 +492,15 @@ export const filterTodoList = function (state) {
   switch (filterBy) {
     case "active": {
       todos = todos.filter((t) => isTodoActive(t));
+      break;
     }
     case "completed": {
       todos = todos.filter((t) => isTodoCompleted(t));
+      break;
     }
     case "overdue": {
       todos = todos.filter((t) => isTodoOverdue(t));
+      break;
     }
   }
 
