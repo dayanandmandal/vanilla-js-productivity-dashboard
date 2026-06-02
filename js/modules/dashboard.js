@@ -1,5 +1,15 @@
-import { TIMER_MODE, TIMER_STATUS } from "../helpers/constants.js";
+import {
+  DASHBOARD_PERIODS,
+  STORAGE_KEYS,
+  TIMER_MODE,
+  TIMER_STATUS,
+} from "../helpers/constants.js";
 import { formatDuration, getTimer } from "../helpers/timerService.js";
+import { persistStorageValue } from "../helpers/utils.js";
+
+const persistDashboardState = function (state) {
+  persistStorageValue(STORAGE_KEYS.DASHBOARD_PERIOD, state.dashboard.ui.period);
+};
 
 const qs = function (root, sel) {
   return root.querySelector(sel);
@@ -13,41 +23,157 @@ const getMetricEl = function (root, key) {
   return qs(root, `[data-metric='${key}']`);
 };
 
-const getTodoMetrics = function (todos, todayStr) {
-  const completed = todos.data.filter(function (t) {
-    return t.isCompleted;
-  });
+const getTodosByPeriod = function (todos, period) {
+  if (period === "all") {
+    return todos;
+  }
 
-  const completedToday = todos.data.filter(function (t) {
-    return t.completedAt && new Date(t.completedAt).toDateString() === todayStr;
+  const now = new Date();
+
+  return todos.filter((todo) => {
+    const date = new Date(todo.createdAt);
+
+    switch (period) {
+      case DASHBOARD_PERIODS.TODAY:
+        return date.toDateString() === now.toDateString();
+
+      case DASHBOARD_PERIODS.WEEK: {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+
+        return date >= weekAgo;
+      }
+
+      case DASHBOARD_PERIODS.MONTH: {
+        const monthAgo = new Date(now);
+        monthAgo.setMonth(now.getMonth() - 1);
+
+        return date >= monthAgo;
+      }
+
+      default:
+        return true;
+    }
+  });
+};
+
+const getTodoMetrics = function (todoState, period) {
+  const todos = getTodosByPeriod(todoState.data, period);
+
+  const completed = todos.filter((todo) => todo.isCompleted);
+
+  const overdue = todos.filter((todo) => {
+    return !todo.isCompleted && new Date(todo.dueDate) < new Date();
   });
 
   return {
-    total: todos.data.length,
+    total: todos.length,
     completed: completed.length,
-    remaining: todos.data.length - completed.length,
-    completedToday: completedToday.length,
+    remaining: todos.length - completed.length,
+    overdue: overdue.length,
   };
 };
 
-const getNotesMetrics = function (notes) {
+const getNotesMetrics = function (notesState, period) {
+  const notes = notesState.data;
+
+  const isInPeriod = function (timestamp) {
+    if (!timestamp) return false;
+
+    if (period === "all") {
+      return true;
+    }
+
+    const date = new Date(timestamp);
+    const now = new Date();
+
+    switch (period) {
+      case "today":
+        return date.toDateString() === now.toDateString();
+
+      case "week": {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+
+        return date >= weekAgo;
+      }
+
+      case "month": {
+        const monthAgo = new Date(now);
+        monthAgo.setMonth(now.getMonth() - 1);
+
+        return date >= monthAgo;
+      }
+
+      default:
+        return true;
+    }
+  };
+
+  const created = notes.filter((note) => {
+    return isInPeriod(note.createdAt);
+  });
+
+  const updated = notes.filter((note) => {
+    return (
+      note.updatedAt &&
+      note.updatedAt !== note.createdAt &&
+      isInPeriod(note.updatedAt)
+    );
+  });
+
   return {
-    total: notes.data.length,
+    total: notes.length,
+    created: created.length,
+    updated: updated.length,
   };
 };
 
-const isFocusCompletedToday = function (entry, todayStr) {
+const isFocusCompleted = function (entry) {
   return (
-    entry.status === TIMER_STATUS.COMPLETED &&
-    entry.mode === TIMER_MODE.FOCUS &&
-    new Date(entry.completedAt).toDateString() === todayStr
+    entry.status === TIMER_STATUS.COMPLETED && entry.mode === TIMER_MODE.FOCUS
   );
 };
 
-const getTimerTodayMetrics = function (timer, todayStr) {
-  const timerTodayM = timer.history.reduce(
+const getTimerMetrics = function (timerState, period) {
+  const history = timerState.history;
+
+  const isInPeriod = function (timestamp) {
+    if (!timestamp) return false;
+
+    if (period === "all") {
+      return true;
+    }
+
+    const date = new Date(timestamp);
+    const now = new Date();
+
+    switch (period) {
+      case "today":
+        return date.toDateString() === now.toDateString();
+
+      case "week": {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+
+        return date >= weekAgo;
+      }
+
+      case "month": {
+        const monthAgo = new Date(now);
+        monthAgo.setMonth(now.getMonth() - 1);
+
+        return date >= monthAgo;
+      }
+
+      default:
+        return true;
+    }
+  };
+
+  const metrics = history.reduce(
     (acc, entry) => {
-      if (isFocusCompletedToday(entry, todayStr)) {
+      if (isFocusCompleted(entry) && isInPeriod(entry.completedAt)) {
         acc.sessions += 1;
         acc.duration += entry.duration;
       }
@@ -61,8 +187,9 @@ const getTimerTodayMetrics = function (timer, todayStr) {
   );
 
   return {
-    sessions: timerTodayM.sessions,
-    durationText: formatDuration(timerTodayM.duration),
+    sessions: metrics.sessions,
+    duration: metrics.duration,
+    durationText: formatDuration(metrics.duration),
   };
 };
 
@@ -95,21 +222,75 @@ export const renderDashboardCards = function (state) {
 
   const todayStr = new Date().toDateString();
 
-  const todoM = getTodoMetrics(state.todo, todayStr);
-  const notesM = getNotesMetrics(state.notes);
-  const timerTodayM = getTimerTodayMetrics(getTimer(state), todayStr);
+  const todoMetricAll = getTodoMetrics(state.todo, "all");
+  const notesMetricAll = getNotesMetrics(state.notes, "all");
+  const timerMetricAll = getTimerMetrics(getTimer(state), "all");
 
-  setMetric(root, "todo.total", todoM.total);
-  setMetric(root, "todo.remainingText", getRemainingText(todoM.remaining));
-  setMetric(root, "todo.completedToday", todoM.completedToday);
+  setMetric(root, "todo.total", todoMetricAll.total);
   setMetric(
     root,
-    "todo.completedTodayText",
-    getCompletedTodayText(todoM.completedToday),
+    "todo.remainingText",
+    getRemainingText(todoMetricAll.remaining),
   );
 
-  setMetric(root, "notes.total", notesM.total);
+  setMetric(root, "notes.total", notesMetricAll.total);
 
-  setMetric(root, "timer.sessionsToday", timerTodayM.sessions);
-  setMetric(root, "timer.durationTodayText", timerTodayM.durationText);
+  setMetric(root, "timer.sessions", timerMetricAll.sessions);
+  setMetric(root, "timer.durationText", timerMetricAll.durationText);
+};
+
+export const renderDashboardPeriodTab = function (state) {
+  const items = document.querySelectorAll("#period-wrap .tab");
+  if (!items.length) return;
+
+  for (let item of items) {
+    const isActive = item.dataset.period === state.dashboard.ui.period;
+    item.classList.toggle("active", isActive);
+  }
+};
+
+export const renderDashboardPeriodCards = function (state) {
+  const root = getDashboardSection();
+  if (!root) return;
+
+  const todayStr = new Date().toDateString();
+
+  const period = state.dashboard.ui.period;
+
+  const todoM = getTodoMetrics(state.todo, period);
+  const notesM = getNotesMetrics(state.notes, period);
+  const timerM = getTimerMetrics(getTimer(state), period);
+
+  setMetric(root, "todo.period.due", todoM.remaining);
+  setMetric(root, "todo.period.completed", todoM.completed);
+
+  setMetric(root, "notes.period.created", notesM.created);
+  setMetric(root, "notes.period.updated", notesM.updated);
+
+  setMetric(root, "timer.period.sessions", timerM.sessions);
+  setMetric(root, "timer.period.durationText", timerM.durationText);
+};
+
+const setUpPeriodTabChangeEvent = function (state, render) {
+  const handleTabChange = function (event) {
+    const periodTabEl = event.target.closest(".tab");
+    if (!periodTabEl) return;
+
+    const period = periodTabEl.dataset.period;
+    if (!period) return;
+
+    state.dashboard.ui.period = period;
+
+    persistDashboardState(state);
+
+    render();
+  };
+
+  const periodWrapEl = document.querySelector("#period-wrap");
+
+  if (periodWrapEl) periodWrapEl.addEventListener("click", handleTabChange);
+};
+
+export const setupDashboardEvents = function (state, render) {
+  setUpPeriodTabChangeEvent(state, render);
 };

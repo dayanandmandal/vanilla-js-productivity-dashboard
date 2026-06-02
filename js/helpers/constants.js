@@ -2,6 +2,8 @@ export const STORAGE_KEYS = {
   THEME: "theme",
   ACTIVE_SECTION: "activeSection",
 
+  DASHBOARD_PERIOD: "dashboardPeriod",
+
   TODO_LIST: "todoList",
   TODO_FILTER: "todoListFilterBy",
   TODO_DRAFT: "todoDraftText",
@@ -19,6 +21,12 @@ export const STORAGE_KEYS = {
   TIMER_DURATION_LEFT: "timerDurationLeft",
   TIMER_MODE: "timerMode",
   TIMER_HISTORY: "timerHistory",
+};
+
+export const DASHBOARD_PERIODS = {
+  TODAY: "today",
+  WEEK: "week",
+  MONTH: "month",
 };
 
 export const TODO_PRIORITY = {

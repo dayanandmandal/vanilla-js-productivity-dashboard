@@ -75,33 +75,6 @@
             </div>
           </div>
 
-          <!-- Completed Today -->
-          <div class="card dashboard-card dashboard-card--completed-todos">
-            <div class="card-left">
-              <div class="icon-box">
-                <svg
-                  xmlns="http://w3.org"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
-              </div>
-            </div>
-            <div class="card-right">
-              <div class="label">Completed Today</div>
-              <div class="value" data-metric="todo.completedToday">—</div>
-              <div class="subtext" data-metric="todo.completedTodayText">—</div>
-            </div>
-          </div>
-
           <!-- Notes -->
           <div class="card dashboard-card dashboard-card--notes">
             <div class="card-left">
@@ -134,7 +107,7 @@
             </div>
           </div>
 
-          <!-- Focus Sessions Today -->
+          <!-- Focus Sessions -->
           <div class="card dashboard-card dashboard-card--focus">
             <div class="card-left">
               <div class="icon-box">
@@ -158,9 +131,73 @@
             </div>
 
             <div class="card-right">
-              <div class="label">Focus Sessions Today</div>
-              <div class="value" data-metric="timer.sessionsToday">—</div>
-              <div class="subtext" data-metric="timer.durationTodayText">—</div>
+              <div class="label">Focus Sessions</div>
+              <div class="value" data-metric="timer.sessions">—</div>
+              <div class="subtext" data-metric="timer.durationText">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="period-metrics-header">
+          <h2>Period Metrics</h2>
+          <div class="tab-wrap" id="period-wrap">
+            <div tabindex="0" class="tab" data-period="today">Today</div>
+            <div tabindex="0" class="tab" data-period="week">Week</div>
+            <div tabindex="0" class="tab" data-period="month">Month</div>
+          </div>
+        </div>
+
+        <div class="dashboard-period-metrics">
+          <!-- Todo Metrics -->
+          <div class="card metric-card">
+            <div class="label">Todo</div>
+
+            <div class="metric-body">
+              <div class="metric-row">
+                <span class="label">Due:</span>
+                <span class="value" data-metric="todo.period.due">—</span>
+              </div>
+
+              <div class="metric-row">
+                <span class="label">Completed:</span>
+                <span class="value" data-metric="todo.period.completed">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes Metrics -->
+          <div class="card metric-card">
+            <div class="label">Notes</div>
+
+            <div class="metric-body">
+              <div class="metric-row">
+                <span class="label">Created:</span>
+                <span class="value" data-metric="notes.period.created">—</span>
+              </div>
+
+              <div class="metric-row">
+                <span class="label">Updated:</span>
+                <span class="value" data-metric="notes.period.updated">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Focus Metrics -->
+          <div class="card metric-card">
+            <div class="label">Focus</div>
+
+            <div class="metric-body">
+              <div class="metric-row">
+                <span class="label">Sessions:</span>
+                <span class="value" data-metric="timer.period.sessions">—</span>
+              </div>
+
+              <div class="metric-row">
+                <span class="label">Duration:</span>
+                <span class="value" data-metric="timer.period.durationText"
+                  >—</span
+                >
+              </div>
             </div>
           </div>
         </div>

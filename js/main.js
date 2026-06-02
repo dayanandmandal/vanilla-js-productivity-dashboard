@@ -14,7 +14,12 @@ import {
   setUpNotesEvent,
   sortNotesList,
 } from "./modules/notes.js";
-import { STORAGE_KEYS, TIMER_MODE, TIMER_STATUS } from "./helpers/constants.js";
+import {
+  DASHBOARD_PERIODS,
+  STORAGE_KEYS,
+  TIMER_MODE,
+  TIMER_STATUS,
+} from "./helpers/constants.js";
 import {
   loadJSON,
   loadNumber,
@@ -27,12 +32,26 @@ import {
   renderTimerModeTab,
   setUpTimerEvents,
 } from "./modules/timer.js";
-import { renderDashboardCards } from "./modules/dashboard.js";
+import {
+  renderDashboardCards,
+  renderDashboardPeriodCards,
+  renderDashboardPeriodTab,
+  setupDashboardEvents,
+} from "./modules/dashboard.js";
 
 const state = {
   app: {
     activeSection: loadString(STORAGE_KEYS.ACTIVE_SECTION, "dashboard"),
     theme: loadString(STORAGE_KEYS.THEME, "light"),
+  },
+
+  dashboard: {
+    ui: {
+      period: loadString(
+        STORAGE_KEYS.DASHBOARD_PERIOD,
+        DASHBOARD_PERIODS.TODAY,
+      ),
+    },
   },
 
   todo: {
@@ -108,6 +127,8 @@ const renderApp = function () {
 
 const renderDashboardScreen = function () {
   renderDashboardCards(state);
+  renderDashboardPeriodTab(state);
+  renderDashboardPeriodCards(state);
 };
 
 const renderTodoScreen = function () {
@@ -195,6 +216,7 @@ const render = function () {
   }
 })();
 
+setupDashboardEvents(state, render);
 setupTodoEvents(state, render);
 setUpNotesEvent(state, render);
 setUpTimerEvents(state, render);
